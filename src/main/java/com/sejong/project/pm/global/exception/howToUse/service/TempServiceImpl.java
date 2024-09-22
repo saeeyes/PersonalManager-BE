@@ -6,6 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.sejong.project.pm.global.exception.codes.ErrorCode.*;
+
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.EXIST_EMAIL;
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.SEARCH_KEYWORD_TOO_SHORT;
+
 @Service
 @Slf4j
 public class TempServiceImpl implements TempService {

@@ -1,10 +1,10 @@
 package com.sejong.project.pm.global.handler;
 
 
-import com.example.meeTeam.global.exception.BaseException;
-import com.example.meeTeam.global.exception.BaseResponse;
-import com.example.meeTeam.global.exception.codes.ErrorCode;
-import com.example.meeTeam.global.exception.codes.reason.Reason;
+import com.sejong.project.pm.global.exception.BaseException;
+import com.sejong.project.pm.global.exception.BaseResponse;
+import com.sejong.project.pm.global.exception.codes.ErrorCode;
+import com.sejong.project.pm.global.exception.codes.reason.Reason;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

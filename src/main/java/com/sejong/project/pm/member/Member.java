@@ -1,0 +1,87 @@
+package com.sejong.project.pm.member;
+
+import com.sejong.project.pm.exercise.MemberExercise;
+import com.sejong.project.pm.eyebody.Eyebody;
+import com.sejong.project.pm.food.MemberFood;
+import com.sejong.project.pm.global.entity.BaseEntity;
+import com.sejong.project.pm.post.MemberPost;
+import com.sejong.project.pm.weight.Weight;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Member extends BaseEntity{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String memberName;
+
+    private String memberPassword;
+
+    private String memberPhoneNum;
+
+    private String memberEmail;
+
+    private double memberWeight;
+
+    private double memberHeight;
+
+    private double memberTargetWeight;
+
+    @Enumerated(EnumType.STRING)
+    private DietType memberDietType;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
+
+    private int memberTargetCalories;
+
+    private String memberCarprofat;
+
+    @Enumerated(EnumType.STRING)
+    private Gender memberGender;
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberExercise> memberExerciseList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberPost> memberPostList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Eyebody> eyebodyList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Weight> weightList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberFood> memberFoodList = new ArrayList<>();
+
+    public enum DietType{
+        DIET("DIET"),
+        BULK("BULK");
+
+        DietType(String type) {}
+
+        private String type;
+    }
+
+    public enum Role{
+        USER("USER"),
+        ADMIN("ADMIN");
+
+        Role(String role){}
+
+        private String role;
+    }
+
+    public enum Gender{
+        MALE("MALE"),
+        FEMALE("FEMALE");
+
+        Gender(String gender){}
+
+        private String gender;
+    }
+}

@@ -1,0 +1,21 @@
+package com.sejong.project.pm.post;
+
+import com.sejong.project.pm.global.entity.BaseEntity;
+import com.sejong.project.pm.member.Member;
+import jakarta.persistence.*;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
+
+public class MemberPost extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
+}

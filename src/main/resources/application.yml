@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/meeteam?serverTimezone=UTC&characterEncoding=UTF-8
+    username: meeteam
+    password: meeteam123!!!
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+    database-platform: org.hibernate.dialect.MySQLDialect
+#jwt:
+#  secret: dflm2p3kmfweoifn1394gnuqef1235fgasdfg444wdf34asdf8asdf934d
+#
+#coolsms:
+#  api:
+#    key: NCS14HW8TTPVRMKT
+#    secret: JQAKZPEMLPNYPDT9QTB97OYJEZE5AEAN
+#    number: 01092740126
