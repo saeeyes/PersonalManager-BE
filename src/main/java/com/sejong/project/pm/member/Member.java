@@ -7,10 +7,17 @@ import com.sejong.project.pm.global.entity.BaseEntity;
 import com.sejong.project.pm.post.MemberPost;
 import com.sejong.project.pm.weight.Weight;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "member")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Member extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

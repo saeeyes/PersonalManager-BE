@@ -1,15 +1,18 @@
 package com.sejong.project.pm.exercise;
 
 import com.sejong.project.pm.global.entity.BaseEntity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Entity
+@Table(name = "exercise")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Exercise extends BaseEntity {
 
     @Id

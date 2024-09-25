@@ -3,7 +3,14 @@ package com.sejong.project.pm.weight;
 import com.sejong.project.pm.global.entity.BaseEntity;
 import com.sejong.project.pm.member.Member;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "weight")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Weight extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,10 +2,15 @@ package com.sejong.project.pm.battle;
 
 import com.sejong.project.pm.global.entity.BaseEntity;
 import com.sejong.project.pm.member.Member;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "battle")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Battle extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

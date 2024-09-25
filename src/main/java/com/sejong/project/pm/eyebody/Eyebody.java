@@ -3,7 +3,14 @@ package com.sejong.project.pm.eyebody;
 import com.sejong.project.pm.global.entity.BaseEntity;
 import com.sejong.project.pm.member.Member;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "eyebody")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Eyebody extends BaseEntity {
 
     @Id
