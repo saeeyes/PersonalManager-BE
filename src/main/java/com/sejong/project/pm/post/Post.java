@@ -33,7 +33,7 @@ public class Post extends BaseEntity {
 
     private Member.Gender recruitmentGender;
 
-    private Member writer;
+    private String writer;
 
     @OneToMany(mappedBy = "post")
     private List<MemberPost> memberPostList = new ArrayList<>();

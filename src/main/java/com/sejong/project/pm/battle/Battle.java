@@ -16,8 +16,9 @@ public class Battle extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
     private Member member1;
-
+    @ManyToOne
     private Member member2;
 
     private double member1TargetWeight;
