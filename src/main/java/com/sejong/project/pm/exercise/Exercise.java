@@ -1,8 +1,10 @@
 package com.sejong.project.pm.exercise;
 
+import com.sejong.project.pm.exercise.dto.ExerciseRequest;
 import com.sejong.project.pm.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,5 +27,20 @@ public class Exercise extends BaseEntity {
 
     @OneToMany(mappedBy = "exercise")
     private List<MemberExercise> memberExerciseList = new ArrayList<>();
+
+    @Builder
+    private Exercise(String exerciseName, int exerciseCaloriesHour, List<MemberExercise> memberExerciseList){
+        this.exerciseName = exerciseName;
+        this.exerciseCaloriesHour = exerciseCaloriesHour;
+        this.memberExerciseList = memberExerciseList;
+    }
+
+    public static Exercise createExercise(ExerciseRequest.saveExerciseDto dto){
+        return Exercise.builder()
+                .exerciseName(dto.exerciseName())
+                .exerciseCaloriesHour(dto.exerciseCaloriesHour())
+                .memberExerciseList(null)
+                .build();
+    }
 
 }
