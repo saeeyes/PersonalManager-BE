@@ -9,4 +9,9 @@ public class ExerciseRequest {
     public record searchExerciseDto(
             String exerciseName
     ){}
+
+    public record doingExerciseDto(
+            String exerciseName,
+            double exerciseTime
+    ){}
 }

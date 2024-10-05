@@ -28,5 +28,19 @@ public class ExerciseController {
         return BaseResponse.onSuccess(exerciseService.searchExercise(searchexercise));
     }
 
+    @GetMapping("/exercise/searchAll")
+    private BaseResponse<?> searchExercise(){
+        return BaseResponse.onSuccess(exerciseService.searchAllExercise());
+    }
 
+    @PostMapping("/exercise/doingExercise")
+    private BaseResponse<?> addDoingExercise(@RequestBody ExerciseRequest.doingExerciseDto doingExerciseDto){
+        exerciseService.addDoingExercise(doingExerciseDto);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @GetMapping("/exercise/todayList")
+    private BaseResponse<?> showTodayExerciseList(){
+        return BaseResponse.onSuccess(exerciseService.showTodayExerciseList());
+    }
 }

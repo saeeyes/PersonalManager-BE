@@ -1,9 +1,11 @@
 package com.sejong.project.pm.exercise;
 
+import com.sejong.project.pm.exercise.dto.ExerciseRequest;
 import com.sejong.project.pm.global.entity.BaseEntity;
 import com.sejong.project.pm.member.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,9 +26,26 @@ public class MemberExercise extends BaseEntity {
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
-    private int exerciseTime;
+    private double exerciseTime;
 
     private int exerciseCalories;
+
+    @Builder
+    private MemberExercise(Member member, Exercise exercise, double exerciseTime, int exerciseCalories) {
+        this.member = member;
+        this.exercise = exercise;
+        this.exerciseTime = exerciseTime;
+        this.exerciseCalories = exerciseCalories;
+    }
+
+    public static MemberExercise createMemberExercise(Member member,Exercise exercise,Double exerciseTime, int exerciseCalories){
+        return MemberExercise.builder()
+                .member(member)
+                .exercise(exercise)
+                .exerciseTime(exerciseTime)
+                .exerciseCalories(exerciseCalories)
+                .build();
+    }
 
 
 }
