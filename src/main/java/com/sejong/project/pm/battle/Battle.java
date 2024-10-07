@@ -3,23 +3,25 @@ package com.sejong.project.pm.battle;
 import com.sejong.project.pm.global.entity.BaseEntity;
 import com.sejong.project.pm.member.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 @Entity
 @Table(name = "battle")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 public class Battle extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long battleId;
 
     @ManyToOne
-    private Member member1;
+    private Member member1Id;
     @ManyToOne
-    private Member member2;
+    private Member member2Id;
 
     private double member1TargetWeight;
 
@@ -29,8 +31,18 @@ public class Battle extends BaseEntity {
 
     private double member2StartWeight;
 
-    private String targetDay;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date targetDay;
 
     private String inviteCode;
+
+    @Builder
+    public Battle(Member member1Id, double member1StartWeight, double member1TargetWeight, Date targetDay){
+        this.member1Id = member1Id;
+        this.member1StartWeight = member1StartWeight;
+        this.member1TargetWeight = member1TargetWeight;
+        this.targetDay = targetDay;
+    }
+
 
 }
