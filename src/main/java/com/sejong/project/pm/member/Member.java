@@ -87,7 +87,8 @@ public class Member extends BaseEntity{
 
     public enum Gender{
         MALE("MALE"),
-        FEMALE("FEMALE");
+        FEMALE("FEMALE"),
+        ALL("ALL");
 
         Gender(String gender){}
 

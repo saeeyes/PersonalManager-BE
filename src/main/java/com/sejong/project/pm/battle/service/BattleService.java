@@ -90,12 +90,11 @@ public class BattleService {
 
 
     public List<BattleResponse.battleListDto> battlelist(Long memberId) {
-        System.out.println(memberId);
+
         List<Battle> allBattles = battleRepository.findAll();
-        System.out.println(allBattles);
-        // 현재 날짜 가져오기
+
         LocalDate today = LocalDate.now();
-        System.out.println(today);
+
         // 필터링 로직: java.util.Date -> LocalDate 변환 후 비교
         List<BattleResponse.battleListDto> filteredBattles = allBattles.stream()
                 .filter(battle ->

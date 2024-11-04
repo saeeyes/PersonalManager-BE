@@ -2,30 +2,33 @@ package com.sejong.project.pm.post;
 
 import com.sejong.project.pm.global.entity.BaseEntity;
 import com.sejong.project.pm.member.Member;
+import com.sejong.project.pm.post.dto.PostRequest;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "post")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String tpostTitle;
+    private String postTitle;
 
     private String postContent;
 
     private String exerciseName;
 
-    private String meetTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    private Date meetTime;
 
     private String meetPlace;
 
@@ -33,8 +36,20 @@ public class Post extends BaseEntity {
 
     private Member.Gender recruitmentGender;
 
-    private String writer;
+    private Long memberId;
 
     @OneToMany(mappedBy = "post")
     private List<MemberPost> memberPostList = new ArrayList<>();
+
+    @Builder
+    public Post(PostRequest.postRequestDto postRequestDto){
+        this.postTitle = postRequestDto.postTitle();
+        this.postContent = postRequestDto.postContent();
+        this.exerciseName = postRequestDto.exerciseName();
+        this.meetTime = postRequestDto.meetTime();
+        this.meetPlace = postRequestDto.meetPlace();
+        this.numberOfPeople = postRequestDto.numberOfPeople();
+        this.recruitmentGender = postRequestDto.recruitmentGender();
+        this.memberId = postRequestDto.memberId();
+    }
 }

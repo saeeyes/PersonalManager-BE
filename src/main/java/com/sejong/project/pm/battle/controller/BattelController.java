@@ -38,7 +38,7 @@ public class BattelController {
         return battleResponse;
     }
 
-    @GetMapping("battlelist")
+    @GetMapping("/battlelist")
     public List<BattleResponse.battleListDto> battlelist(@RequestBody Map<String, Long> data){
         Long memeberId =data.get("memberId");
 
