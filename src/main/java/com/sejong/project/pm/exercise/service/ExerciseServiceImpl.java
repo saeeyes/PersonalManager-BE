@@ -7,16 +7,14 @@ import com.sejong.project.pm.exercise.dto.ExerciseResponse;
 import com.sejong.project.pm.exercise.repository.ExerciseRepository;
 import com.sejong.project.pm.exercise.repository.MemberExerciseRepository;
 import com.sejong.project.pm.global.handler.MyExceptionHandler;
-import com.sejong.project.pm.member.Member;
+import com.sejong.project.pm.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.sejong.project.pm.global.exception.codes.ErrorCode.BAD_REQUEST_ERROR;
 import static com.sejong.project.pm.global.exception.codes.ErrorCode.NOT_VALID_ERROR;
@@ -24,7 +22,7 @@ import static com.sejong.project.pm.global.exception.codes.ErrorCode.NOT_VALID_E
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ExerciseServicelmpl implements ExerciseService{
+public class ExerciseServiceImpl implements ExerciseService{
 
     public final ExerciseRepository exerciseRepository;
     public final MemberExerciseRepository memberExerciseRepository;

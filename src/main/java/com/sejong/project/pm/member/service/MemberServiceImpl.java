@@ -1,0 +1,134 @@
+package com.sejong.project.pm.member.service;
+
+import com.sejong.project.pm.global.auth.member.MemberAuthContext;
+import com.sejong.project.pm.global.auth.token.JwtProvider;
+import com.sejong.project.pm.global.auth.token.KakaoProvider;
+import com.sejong.project.pm.global.auth.token.vo.AccessToken;
+import com.sejong.project.pm.global.auth.token.vo.RefreshToken;
+import com.sejong.project.pm.global.auth.token.vo.TokenResponse;
+import com.sejong.project.pm.global.exception.BaseException;
+import com.sejong.project.pm.member.dto.MemberRequest;
+import com.sejong.project.pm.member.model.Member;
+import com.sejong.project.pm.member.model.MemberOAuth;
+import com.sejong.project.pm.member.dto.MemberResponse;
+import com.sejong.project.pm.member.repository.MemberOAuthRepository;
+import com.sejong.project.pm.member.repository.MemberRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.*;
+import static com.sejong.project.pm.global.properties.JwtProperties.*;
+import static com.sejong.project.pm.member.dto.MemberRequest.*;
+
+
+@RequiredArgsConstructor
+@Service
+@Slf4j
+@Transactional(readOnly = true)
+public class MemberServiceImpl implements MemberService {
+
+    private final MemberRepository memberRepository;
+    private final MemberOAuthRepository memberOAuthRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
+    private final KakaoProvider kakaoProvider;
+
+    @Transactional
+    public String createMember(MemberSignupRequestDto request) {
+
+        Member member = Member.createMember(request);
+        member.encodePassword(passwordEncoder.encode(request.password()));
+        memberRepository.save(member);
+
+        MemberOAuth memberOAuth = MemberOAuth.createMemberOAuth(request.loginType());
+        memberOAuth.updateMemberOAuthBy(member);
+        memberOAuthRepository.save(memberOAuth);
+        return "회원가입이 완료됐습니다.";
+    }
+
+    @Transactional
+    public MemberResponse.MemberTokenResDto localLogin(MemberLocalLoginRequestDto request, HttpServletResponse response){
+
+        Member member = memberRepository
+                .findMemberByMemberEmail(request.email())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        if(!passwordEncoder.matches(request.password(), member.getMemberPassword())){
+            log.error("비밀번호 틀림");
+            throw new BaseException(PASSWORD_ERROR);
+        }
+
+        return MemberResponse.MemberTokenResDto.from(getTokenResponse(response, member));
+    }
+
+
+    @Transactional
+    public MemberResponse.MemberTokenResDto kakaoLogin(String code, HttpServletResponse response) throws IOException{
+
+        //이거는 지금 토큰을 받았을 때임, 프론트에서 코드만 받아야함
+
+        String kakaoAccessToken = kakaoProvider.getAccessToken(code);
+        Map<String, Object> userInfo = kakaoProvider.getUserInfo((kakaoAccessToken));
+
+        String email = (String)userInfo.get("email");
+        String nickname = (String)userInfo.get("nickname");
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        MultiValueMap<String, String> responseBody = new LinkedMultiValueMap<>();
+//        responseBody.add("id", id.toString());
+        response.getWriter().write(responseBody.toString());
+        response.sendRedirect("/signup");
+
+        MemberRequest.MemberSignupRequestDto requestDto = new MemberSignupRequestDto(email,null,null,null);
+        Member member = Member.createMember(requestDto);
+
+        return MemberResponse.MemberTokenResDto.from(getTokenResponse(response, member));
+    }
+
+    public Boolean checkDuplicateId(String email) {
+
+        if(memberRepository.existsByMemberEmail(email))
+            throw new BaseException(EXIST_EMAIL);
+        return true;
+    }
+
+    public String getMemberAdditionInfo(MemberAuthContext context, MemberAdditionInfoRequestDto request) {
+
+        Member member = memberRepository.findMemberByMemberEmail(context.email())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+//        member.addMemberAdditionInfo(request);
+        return "설정 완료";
+    }
+
+    @NotNull
+    private TokenResponse getTokenResponse(HttpServletResponse response, Member member) {
+
+        AccessToken accessToken = jwtProvider.generateAccessToken(member);
+        RefreshToken refreshToken = jwtProvider.generateRefreshToken(member);
+        TokenResponse tokenResponse = TokenResponse.of(accessToken, refreshToken);
+        response.addHeader(JWT_ACCESS_TOKEN_HEADER_NAME, JWT_ACCESS_TOKEN_TYPE + accessToken.token());
+
+        Cookie refreshTokenCookie = new Cookie(JWT_REFRESH_TOKEN_COOKIE_NAME, refreshToken.token());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setMaxAge((int) REFRESH_TOKEN_EXPIRE_TIME);
+        refreshTokenCookie.setPath("/"); //path로 지정된 곳에서만 쿠키데이터를 읽을 수 있음.
+        response.addCookie(refreshTokenCookie);
+
+        return tokenResponse;
+    }
+}

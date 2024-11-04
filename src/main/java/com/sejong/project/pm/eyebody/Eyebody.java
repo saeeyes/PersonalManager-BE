@@ -1,7 +1,7 @@
 package com.sejong.project.pm.eyebody;
 
 import com.sejong.project.pm.global.entity.BaseEntity;
-import com.sejong.project.pm.member.Member;
+import com.sejong.project.pm.member.model.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

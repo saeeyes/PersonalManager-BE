@@ -1,8 +1,7 @@
 package com.sejong.project.pm.exercise;
 
-import com.sejong.project.pm.exercise.dto.ExerciseRequest;
 import com.sejong.project.pm.global.entity.BaseEntity;
-import com.sejong.project.pm.member.Member;
+import com.sejong.project.pm.member.model.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

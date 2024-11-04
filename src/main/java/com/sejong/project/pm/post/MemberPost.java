@@ -1,12 +1,11 @@
 package com.sejong.project.pm.post;
 
 import com.sejong.project.pm.global.entity.BaseEntity;
-import com.sejong.project.pm.member.Member;
+import com.sejong.project.pm.member.model.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
 
 @Entity
 @Table(name = "member_post")
