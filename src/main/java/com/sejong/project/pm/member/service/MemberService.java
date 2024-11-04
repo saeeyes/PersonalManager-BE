@@ -1,0 +1,16 @@
+package com.sejong.project.pm.member.service;
+
+import com.sejong.project.pm.global.auth.member.MemberAuthContext;
+import com.sejong.project.pm.member.dto.MemberRequest;
+import com.sejong.project.pm.member.dto.MemberResponse;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+
+public interface MemberService {
+    String createMember(MemberRequest.MemberSignupRequestDto request);
+    MemberResponse.MemberTokenResDto localLogin(MemberRequest.MemberLocalLoginRequestDto request, HttpServletResponse response);
+    MemberResponse.MemberTokenResDto kakaoLogin(String code, HttpServletResponse response) throws IOException;
+    Boolean checkDuplicateId(String id);
+    String getMemberAdditionInfo(MemberAuthContext context, MemberRequest.MemberAdditionInfoRequestDto request);
+}

@@ -1,7 +1,7 @@
 package com.sejong.project.pm.exercise.repository;
 
 import com.sejong.project.pm.exercise.MemberExercise;
-import com.sejong.project.pm.member.Member;
+import com.sejong.project.pm.member.model.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
