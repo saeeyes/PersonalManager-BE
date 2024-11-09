@@ -28,7 +28,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/", "/testPage", "/home/**", "/signup/**", "/index/**", "/index.js", "/favicon.ico", "/login/**").permitAll()
+                        .requestMatchers("/", "/testPage", "/home/**", "/signup/**", "/index/**", "/index.js", "/favicon.ico", "/login/**","/api/**").permitAll()
                         .anyRequest().authenticated())
                 .securityContext((securityContext) -> {
                     securityContext

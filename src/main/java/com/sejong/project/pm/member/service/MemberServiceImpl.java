@@ -11,6 +11,7 @@ import com.sejong.project.pm.member.dto.MemberRequest;
 import com.sejong.project.pm.member.model.Member;
 import com.sejong.project.pm.member.model.MemberOAuth;
 import com.sejong.project.pm.member.dto.MemberResponse;
+import com.sejong.project.pm.member.model.OAuthProviderType;
 import com.sejong.project.pm.member.repository.MemberOAuthRepository;
 import com.sejong.project.pm.member.repository.MemberRepository;
 import jakarta.servlet.http.Cookie;
@@ -49,13 +50,19 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public String createMember(MemberSignupRequestDto request) {
 
+        System.out.println("enter");
+
         Member member = Member.createMember(request);
         member.encodePassword(passwordEncoder.encode(request.password()));
         memberRepository.save(member);
 
-        MemberOAuth memberOAuth = MemberOAuth.createMemberOAuth(request.loginType());
+        System.out.println("enter2");
+
+        MemberOAuth memberOAuth = MemberOAuth.createMemberOAuth(OAuthProviderType.LOCAL);
         memberOAuth.updateMemberOAuthBy(member);
         memberOAuthRepository.save(memberOAuth);
+
+        System.out.println("enter3");
         return "회원가입이 완료됐습니다.";
     }
 
