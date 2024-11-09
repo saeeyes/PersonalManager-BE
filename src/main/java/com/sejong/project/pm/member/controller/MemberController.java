@@ -24,7 +24,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/signup")
+    @PostMapping("/signup/local")
     public BaseResponse<?> signup(@Valid @RequestBody MemberSignupRequestDto request){
         return BaseResponse.onSuccess(memberService.createMember(request));
     }
