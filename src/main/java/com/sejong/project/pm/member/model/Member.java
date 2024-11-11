@@ -25,6 +25,8 @@ public class Member extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String memberImage;
+
     private String memberName;
 
     private String memberPassword;
