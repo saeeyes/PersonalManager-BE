@@ -4,6 +4,7 @@ import com.sejong.project.pm.global.entity.BaseEntity;
 import com.sejong.project.pm.member.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.internal.util.stereotypes.Lazy;
@@ -25,4 +26,16 @@ public class MemberPost extends BaseEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @Builder
+    private MemberPost(Member member, Post post){
+        this.member = member;
+        this.post = post;
+    }
+
+    public static MemberPost createMemberPost(Member member, Post post){
+        return MemberPost.builder()
+                .member(member)
+                .post(post)
+                .build();
+    }
 }

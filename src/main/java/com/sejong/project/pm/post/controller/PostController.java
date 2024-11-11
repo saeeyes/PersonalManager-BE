@@ -1,5 +1,6 @@
 package com.sejong.project.pm.post.controller;
 
+import com.sejong.project.pm.global.exception.BaseResponse;
 import com.sejong.project.pm.post.dto.PostRequest;
 import com.sejong.project.pm.post.dto.PostResponse;
 
@@ -18,59 +19,56 @@ public class PostController {
     private PostService postService;
 
     @PostMapping("/createpost")
-    public ResponseEntity<String> createpost(@RequestBody PostRequest.postRequestDto postRequestDto){
+    public BaseResponse<?> createpost(@RequestBody PostRequest.postRequestDto postRequestDto){
         postService.createPost(postRequestDto);
-        //memberpost_list에 넣는법 모름... 도와줘
-        return ResponseEntity.ok("success");
+        return BaseResponse.onSuccess("success");
     }
 
     @PutMapping("/rewritepost/{postId}")
-    public ResponseEntity<String> rewritepost(@RequestBody PostRequest.postRequestDto postRequestDto, @PathVariable Long postId){
+    public  BaseResponse<?> rewritepost(@RequestBody PostRequest.postRequestDto postRequestDto, @PathVariable("postId") Long postId){
         postService.rewritePost(postRequestDto, postId);
-        return ResponseEntity.ok("success");
+        return BaseResponse.onSuccess("success");
     }
 
     @DeleteMapping("/deletepost")
-    public ResponseEntity<String> deletepost(@RequestBody Map<String, Long> data){
+    public  BaseResponse<?> deletepost(@RequestBody Map<String, Long> data){
         Long postId = data.get("postId");
         postService.deletePost(postId);
-        return ResponseEntity.ok("success");
+        return BaseResponse.onSuccess("success");
     }
 
     @GetMapping("/allposts")
-    public List<PostResponse.allpostsresponseDto> allposts(@RequestBody Map<String, String> data){
+    public  BaseResponse<?> allposts(@RequestBody Map<String, String> data){
         String gender = data.get("gender");
-        return postService.allposts(gender);
+        return BaseResponse.onSuccess(postService.allposts(gender));
 
     }
 
     @GetMapping("/myposts")
-    public List<PostResponse.mypostsresponseDto> myposts(@RequestBody Map<String, Long> data){
+    public BaseResponse<?> myposts(@RequestBody Map<String, Long> data){
         Long memberId = data.get("memberId");
-        return postService.myposts(memberId);
+        return BaseResponse.onSuccess(postService.myposts(memberId));
     }
 
     @GetMapping("/myapplicants")
-    public List<PostResponse.mypostsresponseDto> myapplicants(@RequestBody Map<String, Long> data){
+    public  BaseResponse<?> myapplicants(@RequestBody Map<String, Long> data){
         Long memberId = data.get("memberId");
-        return postService.myapplicants(memberId);
+        return BaseResponse.onSuccess(postService.myapplicants(memberId));
     }
 
     @PostMapping("/applytopost")
-    public ResponseEntity<String> applytopost(@RequestBody Map<String, Long> data) throws Exception {
+    public  BaseResponse<?> applytopost(@RequestBody Map<String, Long> data) throws Exception {
         Long postId = data.get("postId");
         Long memberId = data.get("memberId");
-
+        System.out.println("?");
         postService.applyToPost(postId,memberId);
 
-        return ResponseEntity.ok("success");
+        return BaseResponse.onSuccess("success");
     }
 
     @GetMapping("/checkmembercount")
-    public PostResponse.membercount checkmembercount(@RequestBody Map<String,Long> data){
+    public  BaseResponse<?> checkmembercount(@RequestBody Map<String,Long> data){
         Long postId = data.get("postId");
-        return postService.checkmembercount(postId);
+        return BaseResponse.onSuccess(postService.checkmembercount(postId));
     }
-
-
 }

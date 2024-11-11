@@ -1,5 +1,6 @@
 package com.sejong.project.pm.post;
 
+import com.sejong.project.pm.global.entity.BaseEntity;
 import com.sejong.project.pm.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,18 +9,28 @@ import lombok.*;
 @Table(name = "postapplication")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
-public class PostApplication {
+public class PostApplication extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @ManyToOne
-    private Post postId;
-    @ManyToOne
-    private Member memberId;
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
     @Builder
     public PostApplication(Post postId, Member memberId) {
-        this.memberId = memberId;
-        this.postId = postId;
+        this.member = memberId;
+        this.post = postId;
+    }
+    public static PostApplication createPostApplication(Member memberId, Post postId){
+        return PostApplication.builder()
+                .memberId(memberId)
+                .postId(postId)
+                .build();
     }
 }

@@ -1,7 +1,9 @@
 package com.sejong.project.pm.post.service;
 
+import com.sejong.project.pm.global.handler.MyExceptionHandler;
 import com.sejong.project.pm.member.Member;
 import com.sejong.project.pm.member.MemberRepository;
+import com.sejong.project.pm.post.MemberPost;
 import com.sejong.project.pm.post.Post;
 import com.sejong.project.pm.post.PostApplication;
 import com.sejong.project.pm.post.dto.PostRequest;
@@ -12,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.ALREADY_ENTER_ROOM;
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.NOT_VALID_ERROR;
 
 
 @Service
@@ -30,11 +34,13 @@ public class PostService {
     PostApplicationRepository postApplicationRepository;
     public void createPost(PostRequest.postRequestDto postRequestDto){
         Post newpost = new Post(postRequestDto);
+        Optional<Member> optionalMember = memberRepository.findById(postRequestDto.memberId());
+        MemberPost memberPost = MemberPost.createMemberPost(optionalMember.get(), newpost);
+        newpost.getMemberPostList().add(memberPost);
         postRepository.save(newpost);
     }
 
     public void rewritePost(PostRequest.postRequestDto postRequestDto, Long postId){
-
         Optional<Post> optionalPost = postRepository.findById(postId);
         Post findPost = optionalPost.get();
 
@@ -64,20 +70,18 @@ public class PostService {
 
     public void deletePost(Long postId){
         Optional<Post> optionalPost = postRepository.findById(postId);
-        Post findPost = optionalPost.get();
-
-        postRepository.delete(findPost);
+        postRepository.delete(optionalPost.get());
     }
     public List<PostResponse.allpostsresponseDto> allposts(String data) {
         List<Post> allPosts = postRepository.findAll();
-        LocalDate today = LocalDate.now();
+        LocalDateTime todayDate = LocalDate.now().atStartOfDay();
 
         List<PostResponse.allpostsresponseDto> filteredPosts = allPosts.stream()
-                .filter(post -> !convertToLocalDateViaInstant(post.getMeetTime()).isBefore(today) && String.valueOf(post.getRecruitmentGender()).equals(data))
+                .filter(post -> !post.getMeetTime().isBefore(todayDate) && String.valueOf(post.getRecruitmentGender()).equals(data))
                 .map(post -> {
-                    int currentNumberOfPeople = postApplicationRepository.countByPostId(post);
-
+                    int currentNumberOfPeople = postApplicationRepository.countByPost_Id(post.getId());
                     return new PostResponse.allpostsresponseDto(
+                            post.getId(),
                             post.getMeetTime(),
                             post.getExerciseName(),
                             post.getMeetPlace(),
@@ -90,23 +94,16 @@ public class PostService {
 
         return filteredPosts;
     }
-    private LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
-        return dateToConvert.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-    }
 
     public List<PostResponse.mypostsresponseDto> myposts(Long memberId){
         List<Post> allPosts = postRepository.findAll();
-        LocalDate today = LocalDate.now();
-
+        LocalDateTime todayDate = LocalDate.now().atStartOfDay();
         List<PostResponse.mypostsresponseDto> filteredPosts = allPosts.stream()
-                .filter(post -> post.getMemberId().equals(memberId) && !convertToLocalDateViaInstant(post.getMeetTime()).isBefore(today))
+                .filter(post -> post.getMemberId().equals(memberId) && !post.getMeetTime().isBefore(todayDate))
                 .map(post -> {
-                    System.out.println(post);
-                    int currentNumberOfPeople = postApplicationRepository.countByPostId(post);
-                    // PostResponse.allpostsrequestDto 객체 생성 시 계산된 값을 전달
+                    int currentNumberOfPeople = postApplicationRepository.countByPost_Id(post.getId());
                     return new PostResponse.mypostsresponseDto(
+                            post.getId(),
                             post.getPostTitle(),
                             post.getMeetPlace(),
                             post.getExerciseName(),
@@ -120,24 +117,23 @@ public class PostService {
     }
 
     public List<PostResponse.mypostsresponseDto> myapplicants(Long memberId){
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
 
-        List<PostApplication> applications = postApplicationRepository.findByMemberId(optionalMember.get());
+        List<PostApplication> applications = postApplicationRepository.findByMember_Id(memberId);
 
         List<Long> postIds = applications.stream()
-                .map(application -> application.getPostId().getId())
+                .map(application -> application.getPost().getId())
                 .collect(Collectors.toList());
 
         List<Post> allPosts = postRepository.findAllById(postIds);
-        LocalDate today = LocalDate.now();
+        LocalDateTime todayDate = LocalDate.now().atStartOfDay();
 
         List<PostResponse.mypostsresponseDto> filteredPosts = allPosts.stream()
-                .filter(post -> !convertToLocalDateViaInstant(post.getMeetTime()).isBefore(today))
+                .filter(post -> !post.getMeetTime().isBefore(todayDate))
                 .map(post -> {
-                    System.out.println(post);
-                    int currentNumberOfPeople = postApplicationRepository.countByPostId(post);
-                    // Creating the PostResponse.mypostsresponseDto with calculated values
+                    int currentNumberOfPeople = postApplicationRepository.countByPost_Id(post.getId());
+
                     return new PostResponse.mypostsresponseDto(
+                            post.getId(),
                             post.getPostTitle(),
                             post.getMeetPlace(),
                             post.getExerciseName(),
@@ -152,20 +148,19 @@ public class PostService {
     public void applyToPost(Long postId, Long memberId) throws Exception {
         Optional<Post> optionalPost = postRepository.findById(postId);
         Optional<Member> optionalMember = memberRepository.findById(memberId);
-
-        int status = postApplicationRepository.countByMemberIdAndPostId(optionalMember.get(),optionalPost.get());
-        System.out.println(status);
+        int status = postApplicationRepository.countByMember_IdAndPost_Id(memberId,postId);
 
         if (status == 0) {
-            PostApplication postApplication = new PostApplication(optionalPost.get(), optionalMember.get());
-            postApplicationRepository.save(postApplication);
+            PostApplication postApplication = PostApplication.createPostApplication(optionalMember.get(), optionalPost.get());
+            optionalPost.get().getPostApplications().add(postApplication);
+            postRepository.save(optionalPost.get());
         } else {
-            throw new Exception("Member has already applied to this post.");
+            throw new MyExceptionHandler(ALREADY_ENTER_ROOM);
         }
     }
     public PostResponse.membercount checkmembercount(Long postId){
         Optional<Post> optionalPost = postRepository.findById(postId);
-        int currentNumberOfPeople = postApplicationRepository.countByPostId(optionalPost.get());
+        int currentNumberOfPeople = postApplicationRepository.countByPost_Id(postId);
         PostResponse.membercount membercount = new PostResponse.membercount(optionalPost.get().getNumberOfPeople(), currentNumberOfPeople);
         return membercount;
     }
