@@ -90,13 +90,20 @@ public class MemberServiceImpl implements MemberService {
         String kakaoAccessToken = kakaoProvider.getAccessToken(code);
         Map<String, Object> userInfo = kakaoProvider.getUserInfo((kakaoAccessToken));
 
+        System.out.println("kakaoAccessToken: " + kakaoAccessToken);
+
         String email = (String)userInfo.get("email");
         String nickname = (String)userInfo.get("nickname");
 
+        System.out.println("email: " + email);
+        System.out.println("nickname: " + nickname);
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
         MultiValueMap<String, String> responseBody = new LinkedMultiValueMap<>();
 //        responseBody.add("id", id.toString());
+
         response.getWriter().write(responseBody.toString());
         response.sendRedirect("/signup");
 
