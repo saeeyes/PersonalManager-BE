@@ -29,7 +29,7 @@ public class FoodServicelmpl implements FoodService{
     private FoodRepository foodRepository;
     private MemberFoodRepository memberFoodRepository;
 
-    public List<SearchFood> searchFood(MemberDetails memberm, searchFoodDto searchFoodDto){
+    public List<SearchFood> searchFood(searchFoodDto searchFoodDto){
         List<Food> foodList = foodRepository.findByFoodName(searchFoodDto.foodname());
         if(foodList.isEmpty() || foodList==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
 
@@ -46,6 +46,7 @@ public class FoodServicelmpl implements FoodService{
         }
         return searchFoods;
     }
+
     public List<SearchFood> searchAllFood(MemberDetails member){
         List<Food> foodList = foodRepository.findAll();
         if(foodList.isEmpty() || foodList==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
@@ -103,7 +104,7 @@ public class FoodServicelmpl implements FoodService{
     }
 
     public List<MemberFood> getMemberFood(MemberDetails member){
-        List<MemberFood> memberFoods = memberFoodRepository.findByMember(member.getUsername());
+        List<MemberFood> memberFoods = memberFoodRepository.findByMember(null);
 
         if(memberFoods.isEmpty() || memberFoods==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
 
@@ -113,20 +114,53 @@ public class FoodServicelmpl implements FoodService{
 //우선순위 이거부터 해야함.
 
 
-    public List<FoodDTO> addFood(MemberDetails member, AddFoodDTO request){
-        List<FoodDTO> foods = new ArrayList<>();
+    public FoodDTO addFood(MemberDetails member, AddFoodDTO request){
+        FoodDTO response = new FoodDTO(
+                request.foodName(),
+                request.foodCalories(),
+                request.manufacturingCompany(),
+                request.protein(),
+                request.carbohydrate(),
+                request.fat()
+        );
 
+        Food food = Food.builder()
+                .foodName(request.foodName())
+                .foodCalories(request.foodCalories())
+                .manufacturingCompany(request.manufacturingCompany())
+                .protein(request.protein())
+                .carbohydrate(request.carbohydrate())
+                .fat(request.fat())
+                .build();
 
-        return foods;
+        foodRepository.save(food);
+
+        return response;
 
     }
 
 
-    public List<FoodDTO> addEatingFood(MemberDetails member, searchFoodDto request){
-        List<FoodDTO> foods = new ArrayList<>();
+    public FoodDTO addEatingFood(MemberDetails member, searchFoodDto request){
+        List<SearchFood> foods = searchFood(request);
 
 
-        return foods;
+        //foods중에 하나 골라야함
+        //SearchFood말고 다있는걸로 바꾸자
+        SearchFood food = foods.get(0);
+
+        FoodDTO response = new FoodDTO(
+                food.foodname(),
+                food.foodCalories(),
+                food.manufacturingCompany(),
+                0,
+                0,
+                0
+        );
+        
+        //food가져오고 member 가져오고 넣어야함
+
+
+        return response;
     }
 
 

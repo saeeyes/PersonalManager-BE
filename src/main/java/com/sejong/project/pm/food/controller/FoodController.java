@@ -22,7 +22,7 @@ public class FoodController {
 
     @GetMapping("/food/search")
     private BaseResponse<?> searchFood(@AuthenticationPrincipal MemberDetails member, @RequestBody searchFoodDto searchFoodDto){
-        return BaseResponse.onSuccess(foodService.searchFood(member, searchFoodDto));
+        return BaseResponse.onSuccess(foodService.searchFood(searchFoodDto));
     }
 
     @GetMapping("/food/searchAll")

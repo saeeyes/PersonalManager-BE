@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FoodService {
-    List<SearchFood> searchFood(MemberDetails member,searchFoodDto searchFoodDto);
+    List<SearchFood> searchFood(searchFoodDto searchFoodDto);
     List<SearchFood> searchAllFood(MemberDetails member);
 
     List<SearchFood> getEatingFood(MemberDetails member);
@@ -20,7 +20,7 @@ public interface FoodService {
     boolean checkDate(LocalDateTime created);
     List<MemberFood> getMemberFood(MemberDetails member);
 
-    List<FoodDTO> addFood(MemberDetails member, AddFoodDTO request);
-    List<FoodDTO> addEatingFood(MemberDetails member, searchFoodDto request);
+    FoodDTO addFood(MemberDetails member, AddFoodDTO request);
+    FoodDTO addEatingFood(MemberDetails member, searchFoodDto request);
 
 }
