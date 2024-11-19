@@ -7,13 +7,8 @@ import com.sejong.project.pm.global.exception.BaseException;
 import com.sejong.project.pm.member.dto.MemberDetails;
 import com.sejong.project.pm.member.model.Member;
 import com.sejong.project.pm.member.repository.MemberRepository;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileItem;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +33,7 @@ import static com.sejong.project.pm.global.exception.codes.ErrorCode.MEMBER_NOT_
 public class EyeBodyServiceImpl implements EyebodyService{
 
     private final EyebodyRepository eyebodyRepository;
-    private  final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     private final String uploadFolderPath = "src/main/resources/static/imgs/";
 
@@ -81,7 +76,6 @@ public class EyeBodyServiceImpl implements EyebodyService{
                   Eyebody.builder()
                           .title(img.getName())
                           .coverImageUrl(uploadFolderPath)
-                          .member(member)
                           .build()
                 );
 
