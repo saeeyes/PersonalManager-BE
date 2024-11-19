@@ -2,17 +2,13 @@ package com.sejong.project.pm.eyebody.controller;
 
 import com.sejong.project.pm.eyebody.service.EyebodyService;
 import com.sejong.project.pm.global.exception.BaseResponse;
+import com.sejong.project.pm.member.dto.MemberDetails;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,12 +18,19 @@ public class EyebodyController {
 
     @ResponseBody
     @PostMapping("/api/saveImage")
-    public BaseResponse<?> uploadImg(@RequestParam("img") MultipartFile img) throws Exception {
-        return BaseResponse.onSuccess(eyebodyService.uploadImg(img));
+
+    public BaseResponse<?> uploadImg(@RequestParam("img") MultipartFile img,@AuthenticationPrincipal MemberDetails memberDetails) throws Exception {
+        return BaseResponse.onSuccess(eyebodyService.uploadImg(img,memberDetails));
     }
 
-//    @GetMapping("/api/getImage")
-//    public BaseResponse<?> getImg(Long id) throws Exception {
-//        return BaseResponse.onSuccess(eyebodyService.getImg(id));
-//    }
+    @GetMapping(value ="/api/getImage", produces= MediaType.IMAGE_PNG_VALUE)
+    public byte[] getImg(Long id) throws Exception {
+        return eyebodyService.getImg(id);
+    }
+
+    @GetMapping(value ="/api/getImageList")
+    public BaseResponse<?> getImgList2(@AuthenticationPrincipal MemberDetails member) throws Exception {
+        return BaseResponse.onSuccess(eyebodyService.getImgList(member));
+    }
+
 }

@@ -7,6 +7,7 @@ import com.sejong.project.pm.global.auth.token.vo.AccessToken;
 import com.sejong.project.pm.global.auth.token.vo.RefreshToken;
 import com.sejong.project.pm.global.auth.token.vo.TokenResponse;
 import com.sejong.project.pm.global.exception.BaseException;
+import com.sejong.project.pm.member.dto.MemberDetails;
 import com.sejong.project.pm.member.dto.MemberRequest;
 import com.sejong.project.pm.member.model.Member;
 import com.sejong.project.pm.member.model.MemberOAuth;
@@ -26,6 +27,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -145,4 +148,67 @@ public class MemberServiceImpl implements MemberService {
 
         return tokenResponse;
     }
+
+    //회원 가입 후 사용자 정보 입력 하는 공간
+    // 소비 칼로리 다이어트랑, 칼로리 계산 하는거 넣기  / 회원가입 후에 정보 입력 받을 모델 필요함.
+    public String profileSetting(MemberDetails memberDetails, MemberRequest.ProfileSetting request){
+        //member받아오기
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        //사용자 칼로리 계산
+        int targetCalories = calCalories(
+                request.memberWeight(),
+                request.memberHeight(),
+                request.memberAge(),
+                request.memberGender()
+        );
+
+        //사용자 탄단지 계산
+        String carprofat = calCarprofat(member,request,targetCalories);
+
+        member.addProfileSetting(
+                request.name(),
+                request.memberAge(),
+                request.memberHeight(),
+                request.memberWeight(),
+                request.memberTargetWeight(),
+                targetCalories,
+                request.memberDietType(),
+                request.memberGender(),
+                carprofat
+        );
+
+        return "success";
+    }
+
+    public int calCalories(double memberWeight, double memberHeight, int memberAge, Member.Gender memberGender){
+
+        int calories = 0;
+        if(memberGender == Member.Gender.MALE){
+            calories += 66.47 + (13.75 * memberWeight) + (5 * memberHeight) - (6.76 * memberAge);
+        }
+        else if(memberGender == Member.Gender.FEMALE){
+            calories += 655.1 + (9.56 * memberWeight) + (1.85 * memberHeight) - (4.68 * memberAge);
+        }
+        else throw new BaseException(BAD_REQUEST);
+
+        return calories;
+    }
+
+    public String calCarprofat(Member member, MemberRequest.ProfileSetting request,int targetCalories){
+        String carprofat = "";
+        String carprofatPercent = request.memberDietType().getPercent();
+
+        List<String> percent = Arrays.stream(carprofatPercent.split(":")).toList();
+
+        for(int i=0;i<percent.size()-1;i++){
+            int tmp = Integer.parseInt(percent.get(i));
+            carprofat+=(tmp+":");
+        }
+        carprofat += percent.get(percent.size()-1);
+        return carprofat;
+    }
+
 }

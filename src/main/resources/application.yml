@@ -14,11 +14,15 @@ spring:
     properties:
       hibernate:
     database-platform: org.hibernate.dialect.MySQLDialect
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
+  springdoc:
+    swagger-ui:
+      path: /swagger-ui.html
+      disable-swagger-default-url: true
+      display-request-duration: true
+      operations-sorter: alpha
+    default-consumes-media-type: application/json;charset=UTF-8
+    default-produces-media-type: application/json;charset=UTF-8
+    packages-to-scan: com.sejong.project.idid
 
   security:
     oauth2:

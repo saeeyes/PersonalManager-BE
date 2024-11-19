@@ -35,6 +35,10 @@ public class Eyebody extends BaseEntity {
         this.member = member;
     }
 
+    public String getTitle(){
+        return title;
+    }
+
     public void setUrl(String coverImageUrl){
         this.coverImageUrl = coverImageUrl;
     }

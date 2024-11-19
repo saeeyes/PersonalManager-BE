@@ -11,6 +11,7 @@ import com.sejong.project.pm.food.repository.MemberFoodRepository;
 import com.sejong.project.pm.global.handler.MyExceptionHandler;
 import com.sejong.project.pm.member.dto.MemberDetails;
 import com.sejong.project.pm.member.model.Member;
+import com.sejong.project.pm.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.sejong.project.pm.global.exception.codes.ErrorCode.BAD_REQUEST_ERROR;
 
@@ -26,24 +28,23 @@ import static com.sejong.project.pm.global.exception.codes.ErrorCode.BAD_REQUEST
 @RequiredArgsConstructor
 public class FoodServicelmpl implements FoodService{
 
+    private final MemberRepository memberRepository;
     private FoodRepository foodRepository;
     private MemberFoodRepository memberFoodRepository;
 
     public List<SearchFood> searchFood(searchFoodDto searchFoodDto){
-        List<Food> foodList = foodRepository.findByFoodName(searchFoodDto.foodname());
-        if(foodList.isEmpty() || foodList==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
+
+        Food foodList = foodRepository.findByFoodName(searchFoodDto.foodname());
+        if(foodList==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
 
         List<SearchFood> searchFoods = new ArrayList<>();
 
-        for(Food fd : foodList){
-            //탄단지 추가는 조금 나중에 해야할듯
-
             searchFoods.add(new SearchFood(
-                    fd.getFoodName(),
-                    fd.getFoodCalories(),
-                    fd.getManufacturingCompany()
+                    foodList.getFoodName(),
+                    foodList.getFoodCalories(),
+                    foodList.getManufacturingCompany()
             ));
-        }
+
         return searchFoods;
     }
 
@@ -64,32 +65,38 @@ public class FoodServicelmpl implements FoodService{
         }
         return searchFoods;
     }
-    public List<SearchFood> getEatingFood(MemberDetails member){
-        List<SearchFood> searchFoods = new ArrayList<>();
+
+    public List<FoodDTO> getEatingFood(MemberDetails member){
+        List<FoodDTO> searchFoods = new ArrayList<>();
         List<MemberFood> memberFoods = getMemberFood(member);
 
         for(MemberFood mf : memberFoods) searchFoods.add(
-                new SearchFood(
+                new FoodDTO(
                         mf.getFood().getFoodName(),
                         mf.getFood().getFoodCalories(),
-                        mf.getFood().getManufacturingCompany()
+                        mf.getFood().getManufacturingCompany(),
+                        mf.getFood().getProtein(),
+                        mf.getFood().getCarbohydrate(),
+                        mf.getFood().getFat()
                 )
         );
-
         return searchFoods;
     }
 
-    public List<SearchFood> getEatingFoodToday(MemberDetails member){
-        List<SearchFood> searchFoods = new ArrayList<>();
+    public List<FoodDTO> getEatingFoodToday(MemberDetails member){
+        List<FoodDTO> searchFoods = new ArrayList<>();
         List<MemberFood> memberFoods = getMemberFood(member);
 
         for(MemberFood mf : memberFoods){
             if(checkDate(mf.getCreatedAt())){
                 searchFoods.add(
-                        new SearchFood(
+                        new FoodDTO(
                                 mf.getFood().getFoodName(),
                                 mf.getFood().getFoodCalories(),
-                                mf.getFood().getManufacturingCompany()
+                                mf.getFood().getManufacturingCompany(),
+                                mf.getFood().getProtein(),
+                                mf.getFood().getCarbohydrate(),
+                                mf.getFood().getFat()
                         )
                 );
             }
@@ -141,27 +148,37 @@ public class FoodServicelmpl implements FoodService{
 
 
     public FoodDTO addEatingFood(MemberDetails member, searchFoodDto request){
-        List<SearchFood> foods = searchFood(request);
 
-
-        //foods중에 하나 골라야함
-        //SearchFood말고 다있는걸로 바꾸자
-        SearchFood food = foods.get(0);
+        Food food = getFood(request.foodname());
 
         FoodDTO response = new FoodDTO(
-                food.foodname(),
-                food.foodCalories(),
-                food.manufacturingCompany(),
-                0,
-                0,
-                0
+                food.getFoodName(),
+                food.getFoodCalories(),
+                food.getManufacturingCompany(),
+                food.getProtein(),
+                food.getCarbohydrate(),
+                food.getFat()
         );
-        
-        //food가져오고 member 가져오고 넣어야함
 
+        double eatingAmount=0;
+        Optional<Member> mem = memberRepository.findMemberByMemberName(member.getUsername());
+
+        if(!mem.isPresent()) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
+        Member tmp=mem.get();
+        MemberFood memberFood = new MemberFood(
+            eatingAmount,
+                (int)(food.getFoodCalories()*eatingAmount),
+                food,
+                tmp
+        );
 
         return response;
     }
 
+    public Food getFood(String foodName){
+        Food food = foodRepository.findByFoodName(foodName);
+        if(food==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
+        return food;
+    }
 
 }

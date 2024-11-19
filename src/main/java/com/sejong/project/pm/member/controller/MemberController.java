@@ -45,10 +45,18 @@ public class MemberController {
         return BaseResponse.onSuccess(memberService.kakaoLogin(request.code(), response));
     }
 
+    //회원가입 이후에 첫 로그인시 데이터 기록 하는거
+
     @PostMapping("/user-info")
     public BaseResponse<?> postUserInfoAfterSignUp(@AuthenticationPrincipal MemberDetails principal,
                                                    @Valid @RequestBody MemberAdditionInfoRequestDto request){
         return BaseResponse.onSuccess(memberService.getMemberAdditionInfo(principal.context(),  request));
+    }
+
+    @PostMapping("/profileSetting")
+    public BaseResponse<?> profileSetting(@AuthenticationPrincipal MemberDetails principal,
+                                                   @Valid @RequestBody ProfileSetting request){
+        return BaseResponse.onSuccess(memberService.profileSetting(principal, request));
     }
 
 }
