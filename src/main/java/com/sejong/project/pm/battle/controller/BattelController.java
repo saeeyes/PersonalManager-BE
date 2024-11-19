@@ -4,6 +4,7 @@ import com.sejong.project.pm.battle.Battle;
 import com.sejong.project.pm.battle.dto.BattleResponse;
 import com.sejong.project.pm.battle.service.BattleService;
 import com.sejong.project.pm.battle.dto.BattleRequest;
+import com.sejong.project.pm.global.exception.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,33 +19,36 @@ public class BattelController {
     private BattleService battleService;
 
     @PostMapping("/createbattle")
-    public ResponseEntity<String> createbattle(@RequestBody BattleRequest.createBattleRequestDto createBattleRequestDto) {
+    public BaseResponse<?> createbattle(@RequestBody BattleRequest.createBattleRequestDto createBattleRequestDto) {
         Long battleId = battleService.createroom(createBattleRequestDto);
         String inviteCode = battleService.createInviteCode(battleId);
-        return ResponseEntity.ok(inviteCode);
-    }
-        // 초대 코드로 초대 받기
-
-    @GetMapping("/acceptbattle")
-    public ResponseEntity<String> acceptbattle(@RequestBody BattleRequest.acceptBattleRequestDto acceptBattleRequestDto) {
-         battleService.acceptbattle(acceptBattleRequestDto);
-        return ResponseEntity.ok("초대 성공: ");
+        return BaseResponse.onSuccess(inviteCode);
     }
 
-    @GetMapping("/battlestatus")
-    public BattleResponse.battlestatusDto battlestatus(@RequestBody Map<String, Long> data){
+
+    @PostMapping("/acceptbattle")
+    public  BaseResponse<?> acceptbattle(@RequestBody BattleRequest.acceptBattleRequestDto acceptBattleRequestDto) {
+        battleService.acceptbattle(acceptBattleRequestDto);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @PostMapping("/battlestatus")
+    public  BaseResponse<?> battlestatus(@RequestBody Map<String, Long> data){
         Long battleId = data.get("battleId");
         BattleResponse.battlestatusDto battleResponse = battleService.battlestatus(battleId);
-        return battleResponse;
+        return BaseResponse.onSuccess(battleResponse);
     }
 
-    @GetMapping("battlelist")
-    public List<BattleResponse.battleListDto> battlelist(@RequestBody Map<String, Long> data){
+    @PostMapping("/battlelist")
+    public  BaseResponse<?> battlelist(@RequestBody Map<String, Long> data){
         Long memeberId =data.get("memberId");
-
         List<BattleResponse.battleListDto> battles = battleService.battlelist(memeberId);
+        return BaseResponse.onSuccess(battles);
+    }
 
-        return battles;
+    @PostMapping("/battleresult")
+    public BaseResponse<?> battleresult(@RequestBody BattleRequest.resultBattleRequestDto resultBattleRequestDto){
+        return BaseResponse.onSuccess(battleService.battleResultDto(resultBattleRequestDto));
     }
 
 }

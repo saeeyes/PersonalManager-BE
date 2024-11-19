@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -32,12 +33,12 @@ public class Battle extends BaseEntity {
     private double member2StartWeight;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date targetDay;
+    private LocalDate targetDay;
 
     private String inviteCode;
 
     @Builder
-    public Battle(Member member1Id, double member1StartWeight, double member1TargetWeight, Date targetDay){
+    public Battle(Member member1Id, double member1StartWeight, double member1TargetWeight, LocalDate targetDay){
         this.member1Id = member1Id;
         this.member1StartWeight = member1StartWeight;
         this.member1TargetWeight = member1TargetWeight;

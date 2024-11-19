@@ -3,16 +3,13 @@ package com.sejong.project.pm.post;
 import com.sejong.project.pm.global.entity.BaseEntity;
 import com.sejong.project.pm.member.model.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name = "member_post")
+@Table(name = "postapplication")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class MemberPost extends BaseEntity {
+public class PostApplication extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,15 +23,14 @@ public class MemberPost extends BaseEntity {
     private Post post;
 
     @Builder
-    private MemberPost(Member member, Post post){
-        this.member = member;
-        this.post = post;
+    public PostApplication(Post postId, Member memberId) {
+        this.member = memberId;
+        this.post = postId;
     }
-
-    public static MemberPost createMemberPost(Member member, Post post){
-        return MemberPost.builder()
-                .member(member)
-                .post(post)
+    public static PostApplication createPostApplication(Member memberId, Post postId){
+        return PostApplication.builder()
+                .memberId(memberId)
+                .postId(postId)
                 .build();
     }
 }

@@ -1,7 +1,9 @@
 package com.sejong.project.pm.battle.dto;
 
+import org.springframework.cglib.core.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class BattleRequest {
@@ -11,7 +13,7 @@ public class BattleRequest {
             Long member1Id,
             double member1TargetWeight,
             @DateTimeFormat(pattern = "yyyy-MM-dd")
-            Date targetDay
+            LocalDate targetDay
     ) {}
 
     // 배틀 요청을 검색하기 위한 DTO
@@ -21,4 +23,9 @@ public class BattleRequest {
             double member2TargetWeight
 
     ) {}
+
+    public record resultBattleRequestDto(
+            Long battleId,
+            Long memberId
+    ){}
 }
