@@ -4,8 +4,8 @@ import com.sejong.project.pm.battle.Battle;
 import com.sejong.project.pm.battle.dto.BattleRequest;
 import com.sejong.project.pm.battle.dto.BattleResponse;
 import com.sejong.project.pm.battle.repository.BattleRepository;
-import com.sejong.project.pm.member.Member;
-import com.sejong.project.pm.member.MemberRepository;
+import com.sejong.project.pm.member.model.Member;
+import com.sejong.project.pm.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
