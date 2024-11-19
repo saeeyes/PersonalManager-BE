@@ -1,5 +1,6 @@
 package com.sejong.project.pm.member.dto;
 
+import com.sejong.project.pm.member.model.Member;
 import com.sejong.project.pm.member.model.OAuthProviderType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -26,5 +27,15 @@ public class MemberRequest{
             @NotEmpty String name,
             double latitude,
             double longitude
+    ){}
+
+    public record ProfileSetting(
+            @NotEmpty String name,
+            int memberAge,
+            double memberHeight,
+            double memberWeight,
+            double memberTargetWeight,
+            Member.DietType memberDietType,
+            Member.Gender memberGender
     ){}
 }

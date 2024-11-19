@@ -29,11 +29,15 @@ public class Member extends BaseEntity{
 
     private String memberName;
 
+    private int memberAge;
+
     private String memberPassword;
 
     private String memberPhoneNum;
 
     private String memberEmail;
+
+    private int memberCalories;
 
     private double memberWeight;
 
@@ -77,12 +81,16 @@ public class Member extends BaseEntity{
     }
 
     public enum DietType{
-        DIET("DIET"),
-        BULK("BULK");
+        DIET("DIET","3:5:2"),
+        BULK("BULK","4:4:2");
 
-        DietType(String type) {}
-
+        DietType(String type,String percent) {}
         private String type;
+        private String percent;
+
+        public String getPercent() {
+            return percent;
+        }
     }
 
     public enum Role{
@@ -90,7 +98,6 @@ public class Member extends BaseEntity{
         ADMIN("ADMIN");
 
         Role(String role){}
-
         private String role;
     }
 
@@ -99,7 +106,6 @@ public class Member extends BaseEntity{
         FEMALE("FEMALE");
 
         Gender(String gender){}
-
         private String gender;
     }
 
@@ -112,16 +118,32 @@ public class Member extends BaseEntity{
     }
 
     public static Member createMember(MemberRequest.MemberSignupRequestDto dto) {
-        return Member.builder()
-                .memberPassword(dto.password())
-                .memberEmail(dto.email())
-                .memberPhoneNum(dto.phoneNumber())
-                .build();
+            return Member.builder()
+                    .memberPassword(dto.password())
+                    .memberEmail(dto.email())
+                    .memberPhoneNum(dto.phoneNumber())
+                    .build();
     }
 
-//    public void addMemberAdditionInfo(MemberRequest.MemberAdditionInfoRequestDto additionInfo) {
-//        this.memberName = additionInfo.name();
-//        this.latitude = additionInfo.latitude();
-//        this.longitude = additionInfo.longitude();
-//    }
+    public void addProfileSetting(String name,
+                                  int memberAge,
+                                  double memberHeight,
+                                  double memberWeight,
+                                  double memberTargetWeight,
+                                  int memberTargetCalories,
+                                  Member.DietType memberDietType,
+                                  Gender memberGender,
+                                  String memberCarprofat
+    ) {
+        this.memberName = name;
+        this.memberAge = memberAge;
+        this.memberHeight = memberHeight;
+        this.memberWeight = memberWeight;
+        this.memberTargetWeight = memberTargetWeight;
+        this.memberTargetCalories = memberTargetCalories;
+        this.memberDietType = memberDietType;
+        this.memberGender = memberGender;
+        this.memberCarprofat = memberCarprofat;
+    }
+
 }

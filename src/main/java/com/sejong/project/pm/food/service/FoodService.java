@@ -1,5 +1,6 @@
 package com.sejong.project.pm.food.service;
 
+import com.sejong.project.pm.food.Food;
 import com.sejong.project.pm.food.MemberFood;
 import com.sejong.project.pm.food.dto.FoodRequest.searchFoodDto;
 import com.sejong.project.pm.food.dto.FoodRequest.AddFoodDTO;
@@ -14,8 +15,8 @@ public interface FoodService {
     List<SearchFood> searchFood(searchFoodDto searchFoodDto);
     List<SearchFood> searchAllFood(MemberDetails member);
 
-    List<SearchFood> getEatingFood(MemberDetails member);
-    List<SearchFood> getEatingFoodToday(MemberDetails member);
+    List<FoodDTO> getEatingFood(MemberDetails member);
+    List<FoodDTO> getEatingFoodToday(MemberDetails member);
 
     boolean checkDate(LocalDateTime created);
     List<MemberFood> getMemberFood(MemberDetails member);
@@ -23,4 +24,5 @@ public interface FoodService {
     FoodDTO addFood(MemberDetails member, AddFoodDTO request);
     FoodDTO addEatingFood(MemberDetails member, searchFoodDto request);
 
+    Food getFood(String foodName);
 }

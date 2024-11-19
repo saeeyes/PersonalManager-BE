@@ -5,6 +5,7 @@ import com.sejong.project.pm.member.model.Member;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,5 +30,13 @@ public class MemberFood extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @Builder
+    public MemberFood(double eatingAmount, int eatingCalories, Food food, Member member) {
+        this.eatingAmount = eatingAmount;
+        this.eatingCalories = eatingCalories;
+        this.food = food;
+        this.member = member;
+    }
 
 }
