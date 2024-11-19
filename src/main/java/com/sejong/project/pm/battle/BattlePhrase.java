@@ -1,4 +1,4 @@
-package com.sejong.project.pm.battle.service;
+package com.sejong.project.pm.battle;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

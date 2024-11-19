@@ -1,11 +1,9 @@
 package com.sejong.project.pm.battle.dto;
 
-import com.sejong.project.pm.battle.service.BattlePhrase;
+import com.sejong.project.pm.battle.BattlePhrase;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 public class BattleResponse {
     public record battlestatusDto(

@@ -1,6 +1,7 @@
 package com.sejong.project.pm.battle.service;
 
 import com.sejong.project.pm.battle.Battle;
+import com.sejong.project.pm.battle.BattlePhrase;
 import com.sejong.project.pm.battle.dto.BattleRequest;
 import com.sejong.project.pm.battle.dto.BattleResponse;
 import com.sejong.project.pm.battle.repository.BattlePhraseRepository;

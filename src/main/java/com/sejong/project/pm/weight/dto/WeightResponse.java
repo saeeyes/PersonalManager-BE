@@ -8,6 +8,10 @@ public class WeightResponse {
             double memberWeight,
             double memberBodyfat,
             double memberSkeletalmuscle,
-            LocalDate day
+            LocalDate date
+    ){}
+    public record MonthWeightDto(
+            double memberWeight,
+            LocalDate date
     ){}
 }

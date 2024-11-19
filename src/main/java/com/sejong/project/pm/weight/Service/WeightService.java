@@ -62,22 +62,19 @@ public class WeightService {
         return weightResponseDto;
     }
 
-    public List<WeightResponse.weightResponseDto> monthweight(WeightRequest.searchWeightRequestDto searchWeightRequestDto) {
+    public List<WeightResponse.MonthWeightDto> monthweight(WeightRequest.searchWeightRequestDto searchWeightRequestDto) {
         int currentMonth = searchWeightRequestDto.today().getMonthValue();
         List<Weight> findWeights = weightRepository.findWeightsByCurrentMonthAndMember_Id(currentMonth, searchWeightRequestDto.memberId());
 
-        List<WeightResponse.weightResponseDto> filteredWeights = findWeights.stream()
+        List<WeightResponse.MonthWeightDto> filteredWeights = findWeights.stream()
                 .map(weight -> {
-                    return new WeightResponse.weightResponseDto(
+                    return new WeightResponse.MonthWeightDto(
                             weight.getMemberWeight(),
-                            weight.getMemberBodyfat(),
-                            weight.getMemberSkeletalmuscle(),
                             weight.getToday()
                     );
                 })
                 .collect(Collectors.toList());
         return filteredWeights;
-
     }
 }
 
