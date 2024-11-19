@@ -32,7 +32,6 @@ public class Post extends BaseEntity {
     private LocalDateTime meetTime;
 
     private String meetPlace;
-
     private int numberOfPeople;
 
     private Member.Gender recruitmentGender;
