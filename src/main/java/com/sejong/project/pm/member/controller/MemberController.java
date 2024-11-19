@@ -53,4 +53,10 @@ public class MemberController {
         return BaseResponse.onSuccess(memberService.getMemberAdditionInfo(principal.context(),  request));
     }
 
+    @PostMapping("/profileSetting")
+    public BaseResponse<?> profileSetting(@AuthenticationPrincipal MemberDetails principal,
+                                                   @Valid @RequestBody ProfileSetting request){
+        return BaseResponse.onSuccess(memberService.profileSetting(principal, request));
+    }
+
 }

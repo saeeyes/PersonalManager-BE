@@ -14,7 +14,6 @@ spring:
     properties:
       hibernate:
     database-platform: org.hibernate.dialect.MySQLDialect
-
   springdoc:
     swagger-ui:
       path: /swagger-ui.html
