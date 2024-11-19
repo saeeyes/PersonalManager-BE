@@ -113,7 +113,6 @@ public class BattleService {
     public List<BattleResponse.battleListDto> battlelist(Long memberId) {
 
         List<Battle> allBattles = battleRepository.findAll();
-
         LocalDate today = LocalDate.now();
 
         List<BattleResponse.battleListDto> filteredBattles = allBattles.stream()
@@ -121,14 +120,33 @@ public class BattleService {
                         (battle.getMember1Id().getId().equals(memberId) || battle.getMember2Id().getId().equals(memberId)) &&
                                 !battle.getTargetDay().isBefore(today) && battle.getMember2Id() != null
                 )
-                .map(battle -> new BattleResponse.battleListDto(battle.getMember1Id().getMemberName(),
-                        battle.getMember2Id().getMemberName(), battle.getMember1Id().getMemberImage(),
-                        battle.getMember2Id().getMemberImage(), battle.getCreatedAt().toLocalDate(), battle.getTargetDay()))
+                .map(battle -> {
+                    // 상대방 정보 추출
+                    String opponentName;
+                    String opponentImage;
+
+                    if (battle.getMember1Id().getId().equals(memberId)) {
+                        opponentName = battle.getMember2Id().getMemberName();
+                        opponentImage = battle.getMember2Id().getMemberImage();
+                    } else {
+                        opponentName = battle.getMember1Id().getMemberName();
+                        opponentImage = battle.getMember1Id().getMemberImage();
+                    }
+
+                    return new BattleResponse.battleListDto(
+                            battle.getBattleId(),
+                            opponentName,
+                            opponentImage,
+                            battle.getCreatedAt().toLocalDate(),
+                            battle.getTargetDay()
+                    );
+                })
                 .collect(Collectors.toList());
 
         System.out.println(filteredBattles);
         return filteredBattles;
     }
+
 
     public BattleResponse.battleResultDto battleResultDto(BattleRequest.resultBattleRequestDto resultBattleRequestDto) {
         Battle battle = battleRepository.findById(resultBattleRequestDto.battleId())

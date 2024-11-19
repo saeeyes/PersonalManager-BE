@@ -41,21 +41,18 @@ public class BattleResponse {
     }
 
     public record battleListDto(
-        String member1Name,
-        String member2Name,
-        String member1Image,
-        String member2Image,
+        Long battleId,
+        String opponentName,
+        String opponentImage,
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate startDay,
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         LocalDate targetDay
-    ){public battleListDto(String member1Name, String member2Name,
-                           String member1Image, String member2Image,
+    ){public battleListDto(Long battleId, String opponentName, String opponentImage,
                            LocalDate startDay, LocalDate targetDay){
-        this.member1Name = member1Name;
-        this.member2Name = member2Name;
-        this.member1Image = member1Image;
-        this.member2Image = member2Image;
+        this.battleId = battleId;
+        this.opponentName = opponentName;
+        this.opponentImage = opponentImage;
         this.startDay = startDay;
         this.targetDay = targetDay;
     }}

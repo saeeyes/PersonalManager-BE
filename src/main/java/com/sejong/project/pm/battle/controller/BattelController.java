@@ -25,27 +25,28 @@ public class BattelController {
         return BaseResponse.onSuccess(inviteCode);
     }
 
+
     @PostMapping("/acceptbattle")
     public  BaseResponse<?> acceptbattle(@RequestBody BattleRequest.acceptBattleRequestDto acceptBattleRequestDto) {
         battleService.acceptbattle(acceptBattleRequestDto);
         return BaseResponse.onSuccess("success");
     }
 
-    @GetMapping("/battlestatus")
+    @PostMapping("/battlestatus")
     public  BaseResponse<?> battlestatus(@RequestBody Map<String, Long> data){
         Long battleId = data.get("battleId");
         BattleResponse.battlestatusDto battleResponse = battleService.battlestatus(battleId);
         return BaseResponse.onSuccess(battleResponse);
     }
 
-    @GetMapping("/battlelist")
+    @PostMapping("/battlelist")
     public  BaseResponse<?> battlelist(@RequestBody Map<String, Long> data){
         Long memeberId =data.get("memberId");
         List<BattleResponse.battleListDto> battles = battleService.battlelist(memeberId);
         return BaseResponse.onSuccess(battles);
     }
 
-    @GetMapping("/battleresult")
+    @PostMapping("/battleresult")
     public BaseResponse<?> battleresult(@RequestBody BattleRequest.resultBattleRequestDto resultBattleRequestDto){
         return BaseResponse.onSuccess(battleService.battleResultDto(resultBattleRequestDto));
     }
