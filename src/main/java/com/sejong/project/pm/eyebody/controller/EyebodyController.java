@@ -18,7 +18,6 @@ public class EyebodyController {
 
     @ResponseBody
     @PostMapping("/api/saveImage")
-
     public BaseResponse<?> uploadImg(@RequestParam("img") MultipartFile img,@AuthenticationPrincipal MemberDetails memberDetails) throws Exception {
         return BaseResponse.onSuccess(eyebodyService.uploadImg(img,memberDetails));
     }

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class WeightResponse {
 
     public record weightResponseDto(
+            String memberName,
             double memberWeight,
             double memberBodyfat,
             double memberSkeletalmuscle,

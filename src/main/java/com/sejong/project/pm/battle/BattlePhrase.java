@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "battle_phase")
+@Table(name = "battle_phrase")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter

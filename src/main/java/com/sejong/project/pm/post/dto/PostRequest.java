@@ -16,8 +16,7 @@ public class PostRequest {
             LocalDateTime meetTime,
             String meetPlace,
             int numberOfPeople,
-            Member.Gender recruitmentGender,
-            Long memberId
+            Member.Gender recruitmentGender
     ){}
 
 }

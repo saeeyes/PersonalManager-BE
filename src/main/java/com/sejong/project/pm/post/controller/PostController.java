@@ -1,12 +1,14 @@
 package com.sejong.project.pm.post.controller;
 
 import com.sejong.project.pm.global.exception.BaseResponse;
+import com.sejong.project.pm.member.dto.MemberDetails;
 import com.sejong.project.pm.post.dto.PostRequest;
 import com.sejong.project.pm.post.dto.PostResponse;
 
 import com.sejong.project.pm.post.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +21,8 @@ public class PostController {
     private PostService postService;
 
     @PostMapping("/createpost")
-    public BaseResponse<?> createpost(@RequestBody PostRequest.postRequestDto postRequestDto){
-        postService.createPost(postRequestDto);
+    public BaseResponse<?> createpost(@AuthenticationPrincipal MemberDetails member, @RequestBody PostRequest.postRequestDto postRequestDto){
+        postService.createPost(member, postRequestDto);
         return BaseResponse.onSuccess("success");
     }
 
@@ -38,37 +40,36 @@ public class PostController {
     }
 
     @GetMapping("/allposts")
-    public  BaseResponse<?> allposts(@RequestBody Map<String, String> data){
-        String gender = data.get("gender");
-        return BaseResponse.onSuccess(postService.allposts(gender));
-
+    public  BaseResponse<?> allposts(@AuthenticationPrincipal MemberDetails member){
+        return BaseResponse.onSuccess(postService.allposts(member));
     }
 
     @GetMapping("/myposts")
-    public BaseResponse<?> myposts(@RequestBody Map<String, Long> data){
-        Long memberId = data.get("memberId");
-        return BaseResponse.onSuccess(postService.myposts(memberId));
+    public BaseResponse<?> myposts(@AuthenticationPrincipal MemberDetails member){
+        return BaseResponse.onSuccess(postService.myposts(member));
     }
 
     @GetMapping("/myapplicants")
-    public  BaseResponse<?> myapplicants(@RequestBody Map<String, Long> data){
-        Long memberId = data.get("memberId");
-        return BaseResponse.onSuccess(postService.myapplicants(memberId));
+    public  BaseResponse<?> myapplicants(@AuthenticationPrincipal MemberDetails member){
+        return BaseResponse.onSuccess(postService.myapplicants(member));
     }
 
     @PostMapping("/applytopost")
-    public  BaseResponse<?> applytopost(@RequestBody Map<String, Long> data) throws Exception {
+    public  BaseResponse<?> applytopost(@AuthenticationPrincipal MemberDetails member, @RequestBody Map<String, Long> data) throws Exception {
         Long postId = data.get("postId");
-        Long memberId = data.get("memberId");
-        System.out.println("?");
-        postService.applyToPost(postId,memberId);
-
+        postService.applyToPost(postId,member);
         return BaseResponse.onSuccess("success");
     }
 
+   @DeleteMapping("/deleteapplicant")
+   public BaseResponse<?> deleteapplicant(@AuthenticationPrincipal MemberDetails member, @RequestBody Map<String, Long> data) throws Exception{
+       Long postId = data.get("postId");
+       postService.deleteApplicant(postId, member);
+       return BaseResponse.onSuccess("success");
+   }
+
     @GetMapping("/checkmembercount")
-    public  BaseResponse<?> checkmembercount(@RequestBody Map<String,Long> data){
-        Long postId = data.get("postId");
+    public  BaseResponse<?> checkmembercount(@RequestParam(name = "postId") Long postId){
         return BaseResponse.onSuccess(postService.checkmembercount(postId));
     }
 }
