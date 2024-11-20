@@ -6,18 +6,22 @@ import com.sejong.project.pm.exercise.dto.ExerciseRequest;
 import com.sejong.project.pm.exercise.dto.ExerciseResponse;
 import com.sejong.project.pm.exercise.repository.ExerciseRepository;
 import com.sejong.project.pm.exercise.repository.MemberExerciseRepository;
+import com.sejong.project.pm.global.exception.BaseException;
 import com.sejong.project.pm.global.handler.MyExceptionHandler;
+import com.sejong.project.pm.member.dto.MemberDetails;
+import com.sejong.project.pm.member.dto.MemberRequest;
 import com.sejong.project.pm.member.model.Member;
+import com.sejong.project.pm.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.sejong.project.pm.global.exception.codes.ErrorCode.BAD_REQUEST_ERROR;
-import static com.sejong.project.pm.global.exception.codes.ErrorCode.NOT_VALID_ERROR;
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.*;
 
 @Service
 @Slf4j
@@ -26,10 +30,13 @@ public class ExerciseServiceImpl implements ExerciseService{
 
     public final ExerciseRepository exerciseRepository;
     public final MemberExerciseRepository memberExerciseRepository;
+    public final MemberRepository memberRepository;
 
-    public void addDoingExercise(ExerciseRequest.doingExerciseDto doingExerciseDto){
-        //member받아와야함
-        Member member = null;
+    public void addDoingExercise(ExerciseRequest.doingExerciseDto doingExerciseDto,@AuthenticationPrincipal MemberDetails memberDetails){
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
         Exercise exercise = exerciseRepository.findByExerciseName(doingExerciseDto.exerciseName()).orElseThrow(() -> new MyExceptionHandler(BAD_REQUEST_ERROR));
         int calories = exercise.getExerciseCaloriesHour()*(int)doingExerciseDto.exerciseTime();
         MemberExercise memberExercise = MemberExercise.createMemberExercise(
@@ -41,9 +48,11 @@ public class ExerciseServiceImpl implements ExerciseService{
         memberExerciseRepository.save(memberExercise);
     }
 
-    public List<ExerciseResponse.doingExerciseDto> showTodayExerciseList(){
-        //member받아와야함
-        Member member =  null;
+    public List<ExerciseResponse.doingExerciseDto> showTodayExerciseList(@AuthenticationPrincipal MemberDetails memberDetails){
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
         List<MemberExercise> memberExerciseList = memberExerciseRepository.findByMember(member);
         if(memberExerciseList.isEmpty() || memberExerciseList==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
 
@@ -67,7 +76,7 @@ public class ExerciseServiceImpl implements ExerciseService{
         return doingExerciseDto;
     }
 
-    public void saveExercise(ExerciseRequest.saveExerciseDto saveExercise){
+    public void saveExercise(ExerciseRequest.saveExerciseDto saveExercise,@AuthenticationPrincipal MemberDetails member){
         //중복체크할 필요가 있을까
         Exercise exercise = Exercise.createExercise(saveExercise);
         exerciseRepository.save(exercise);

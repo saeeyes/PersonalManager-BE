@@ -21,7 +21,7 @@ public class ExerciseController {
 
     @PostMapping("/exercise/save")
     private BaseResponse<?> saveExercise(@AuthenticationPrincipal MemberDetails member, @RequestBody ExerciseRequest.saveExerciseDto saveExercise){
-        exerciseService.saveExercise(saveExercise);
+        exerciseService.saveExercise(saveExercise,member);
         return BaseResponse.onSuccess("success");
     }
 
@@ -37,13 +37,13 @@ public class ExerciseController {
 
     @PostMapping("/exercise/doingExercise")
     private BaseResponse<?> addDoingExercise(@AuthenticationPrincipal MemberDetails member, @RequestBody ExerciseRequest.doingExerciseDto doingExerciseDto){
-        exerciseService.addDoingExercise(doingExerciseDto);
+        exerciseService.addDoingExercise(doingExerciseDto,member);
         return BaseResponse.onSuccess("success");
     }
 
     @GetMapping("/exercise/todayList")
     private BaseResponse<?> showTodayExerciseList(@AuthenticationPrincipal MemberDetails member){
-        return BaseResponse.onSuccess(exerciseService.showTodayExerciseList());
+        return BaseResponse.onSuccess(exerciseService.showTodayExerciseList(member));
     }
 
 }
