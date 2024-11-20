@@ -16,6 +16,7 @@ public class MemberRequest{
             @Email String email,
             @NotEmpty String password,
             @Pattern(regexp = "^010\\d{4}\\d{4}$", message = "핸드폰 번호 형식이 올바르지 않습니다.") String phoneNumber,
+            Member.Gender gender,
             OAuthProviderType loginType
     ){}
 

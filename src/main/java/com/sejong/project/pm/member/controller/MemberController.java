@@ -46,7 +46,6 @@ public class MemberController {
     }
 
     //회원가입 이후에 첫 로그인시 데이터 기록 하는거
-
     @PostMapping("/user-info")
     public BaseResponse<?> postUserInfoAfterSignUp(@AuthenticationPrincipal MemberDetails principal,
                                                    @Valid @RequestBody MemberAdditionInfoRequestDto request){

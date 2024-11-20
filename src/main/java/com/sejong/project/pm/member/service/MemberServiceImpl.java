@@ -57,6 +57,7 @@ public class MemberServiceImpl implements MemberService {
 
         Member member = Member.createMember(request);
         member.encodePassword(passwordEncoder.encode(request.password()));
+        member.setMemberGender(request.gender());
         memberRepository.save(member);
 
         System.out.println("enter2");
@@ -110,7 +111,7 @@ public class MemberServiceImpl implements MemberService {
         response.getWriter().write(responseBody.toString());
         response.sendRedirect("/signup");
 
-        MemberRequest.MemberSignupRequestDto requestDto = new MemberSignupRequestDto(email,null,null,null);
+        MemberRequest.MemberSignupRequestDto requestDto = new MemberSignupRequestDto(email,null,null,null,null);
         Member member = Member.createMember(requestDto);
 
         return MemberResponse.MemberTokenResDto.from(getTokenResponse(response, member));
