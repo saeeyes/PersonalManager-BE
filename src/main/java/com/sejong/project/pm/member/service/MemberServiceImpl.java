@@ -163,8 +163,8 @@ public class MemberServiceImpl implements MemberService {
                 request.memberWeight(),
                 request.memberHeight(),
                 request.memberAge(),
-                request.memberGender()
-        );
+                member.getMemberGender()
+                );
 
         //사용자 탄단지 계산
         String carprofat = calCarprofat(member,request,targetCalories);
@@ -177,7 +177,7 @@ public class MemberServiceImpl implements MemberService {
                 request.memberTargetWeight(),
                 targetCalories,
                 request.memberDietType(),
-                request.memberGender(),
+                member.getMemberGender(),
                 carprofat
         );
 

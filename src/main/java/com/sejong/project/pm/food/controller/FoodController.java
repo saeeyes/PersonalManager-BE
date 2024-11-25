@@ -1,5 +1,6 @@
 package com.sejong.project.pm.food.controller;
 
+import com.sejong.project.pm.food.dto.FoodRequest;
 import com.sejong.project.pm.food.dto.FoodRequest.AddFoodDTO;
 import com.sejong.project.pm.food.dto.FoodRequest.searchFoodDto;
 import com.sejong.project.pm.food.service.FoodService;
@@ -8,10 +9,7 @@ import com.sejong.project.pm.member.dto.MemberDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,9 +44,15 @@ public class FoodController {
     }
 
     @PostMapping("/food/addEatingFood")
-    private BaseResponse<?> addEatingFood(@AuthenticationPrincipal MemberDetails member, @RequestBody searchFoodDto request){
+    private BaseResponse<?> addEatingFood(@AuthenticationPrincipal MemberDetails member, @RequestBody FoodRequest.AddEatingFood request){
         return BaseResponse.onSuccess(foodService.addEatingFood(member,request));
     }
+
+    @DeleteMapping("/food/deleteEatingFood")
+    private BaseResponse<?> deleteEatingFood(@AuthenticationPrincipal MemberDetails member, @RequestBody FoodRequest.DeleteEatingFood request){
+        return BaseResponse.onSuccess(foodService.deleteEatingFood(member,request));
+    }
+
 
     //=============================================수정 필요
 

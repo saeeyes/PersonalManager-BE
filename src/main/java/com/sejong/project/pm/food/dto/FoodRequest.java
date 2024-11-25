@@ -1,5 +1,6 @@
 package com.sejong.project.pm.food.dto;
 
+import com.sejong.project.pm.food.MemberFood;
 import jakarta.validation.constraints.NotEmpty;
 
 public class FoodRequest {
@@ -17,6 +18,15 @@ public class FoodRequest {
              double dietaryFiber,
              double sodium,
              double sugar
+    ){}
+
+    public record AddEatingFood(
+       MemberFood.FoodTime foodTime,
+       @NotEmpty String foodname
+    ){}
+
+    public record DeleteEatingFood(
+       @NotEmpty Long id
     ){}
 
 }

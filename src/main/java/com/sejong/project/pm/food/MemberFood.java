@@ -31,6 +31,16 @@ public class MemberFood extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public enum FoodTime{
+        MORNING("MORNING"),
+        LUNCH("LUNCH"),
+        DINNER("DINNER");
+
+        FoodTime(String type){}
+
+        private String type;
+    }
+
     @Builder
     public MemberFood(double eatingAmount, int eatingCalories, Food food, Member member) {
         this.eatingAmount = eatingAmount;

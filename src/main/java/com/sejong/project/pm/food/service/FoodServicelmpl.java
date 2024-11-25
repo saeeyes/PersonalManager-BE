@@ -2,12 +2,14 @@ package com.sejong.project.pm.food.service;
 
 import com.sejong.project.pm.food.Food;
 import com.sejong.project.pm.food.MemberFood;
+import com.sejong.project.pm.food.dto.FoodRequest;
 import com.sejong.project.pm.food.dto.FoodRequest.searchFoodDto;
 import com.sejong.project.pm.food.dto.FoodRequest.AddFoodDTO;
 import com.sejong.project.pm.food.dto.FoodResponse.FoodDTO;
 import com.sejong.project.pm.food.dto.FoodResponse.SearchFood;
 import com.sejong.project.pm.food.repository.FoodRepository;
 import com.sejong.project.pm.food.repository.MemberFoodRepository;
+import com.sejong.project.pm.global.exception.BaseException;
 import com.sejong.project.pm.global.handler.MyExceptionHandler;
 import com.sejong.project.pm.member.dto.MemberDetails;
 import com.sejong.project.pm.member.model.Member;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.BAD_REQUEST;
 import static com.sejong.project.pm.global.exception.codes.ErrorCode.BAD_REQUEST_ERROR;
 
 @Service
@@ -147,7 +150,7 @@ public class FoodServicelmpl implements FoodService{
     }
 
 
-    public FoodDTO addEatingFood(MemberDetails member, searchFoodDto request){
+    public FoodDTO addEatingFood(MemberDetails member, FoodRequest.AddEatingFood request){
 
         Food food = getFood(request.foodname());
 
@@ -179,6 +182,12 @@ public class FoodServicelmpl implements FoodService{
         Food food = foodRepository.findByFoodName(foodName);
         if(food==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
         return food;
+    }
+
+    public List<FoodDTO> deleteEatingFood(MemberDetails member, FoodRequest.DeleteEatingFood request){
+        MemberFood memberFood = memberFoodRepository.findById(request.id()).orElseThrow(() -> new BaseException(BAD_REQUEST));;
+        memberFoodRepository.delete(memberFood);
+        return getEatingFood(member);
     }
 
 }

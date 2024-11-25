@@ -2,6 +2,7 @@ package com.sejong.project.pm.food.service;
 
 import com.sejong.project.pm.food.Food;
 import com.sejong.project.pm.food.MemberFood;
+import com.sejong.project.pm.food.dto.FoodRequest;
 import com.sejong.project.pm.food.dto.FoodRequest.searchFoodDto;
 import com.sejong.project.pm.food.dto.FoodRequest.AddFoodDTO;
 import com.sejong.project.pm.food.dto.FoodResponse.SearchFood;
@@ -22,7 +23,9 @@ public interface FoodService {
     List<MemberFood> getMemberFood(MemberDetails member);
 
     FoodDTO addFood(MemberDetails member, AddFoodDTO request);
-    FoodDTO addEatingFood(MemberDetails member, searchFoodDto request);
+    FoodDTO addEatingFood(MemberDetails member, FoodRequest.AddEatingFood request);
+
+    List<FoodDTO> deleteEatingFood(MemberDetails member, FoodRequest.DeleteEatingFood request);
 
     Food getFood(String foodName);
 }

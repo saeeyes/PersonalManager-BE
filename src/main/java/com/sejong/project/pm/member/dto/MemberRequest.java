@@ -36,7 +36,6 @@ public class MemberRequest{
             double memberHeight,
             double memberWeight,
             double memberTargetWeight,
-            Member.DietType memberDietType,
-            Member.Gender memberGender
+            Member.DietType memberDietType
     ){}
 }
