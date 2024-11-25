@@ -59,11 +59,16 @@ public class BattleResponse {
 
     public record battleResultDto(
             String memberName,
-            BattlePhrase.State state,
+            BattlePhrase.State memberState,
+            String opponentName,
+            BattlePhrase.State opponentState,
             String phrase
-    ){public battleResultDto(String memberName, BattlePhrase.State state, String phrase){
+    ){public battleResultDto(String memberName, BattlePhrase.State memberState, String opponentName, BattlePhrase.State opponentState,String phrase){
         this.memberName = memberName;
-        this.state = state;
+        this.memberState = memberState;
+        this.opponentName = opponentName;
+        this.opponentState = opponentState;
+
         this.phrase = phrase;
     }}
 }

@@ -1,6 +1,8 @@
 package com.sejong.project.pm.post.service;
 
+import com.sejong.project.pm.global.exception.BaseException;
 import com.sejong.project.pm.global.handler.MyExceptionHandler;
+import com.sejong.project.pm.member.dto.MemberDetails;
 import com.sejong.project.pm.member.model.Member;
 import com.sejong.project.pm.member.repository.MemberRepository;
 import com.sejong.project.pm.post.MemberPost;
@@ -11,6 +13,7 @@ import com.sejong.project.pm.post.dto.PostResponse;
 import com.sejong.project.pm.post.repository.PostApplicationRepository;
 import com.sejong.project.pm.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,8 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.sejong.project.pm.global.exception.codes.ErrorCode.ALREADY_ENTER_ROOM;
-import static com.sejong.project.pm.global.exception.codes.ErrorCode.NOT_VALID_ERROR;
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.*;
 
 
 @Service
@@ -32,10 +34,13 @@ public class PostService {
     MemberRepository memberRepository;
     @Autowired
     PostApplicationRepository postApplicationRepository;
-    public void createPost(PostRequest.postRequestDto postRequestDto){
-        Post newpost = new Post(postRequestDto);
-        Optional<Member> optionalMember = memberRepository.findById(postRequestDto.memberId());
-        MemberPost memberPost = MemberPost.createMemberPost(optionalMember.get(), newpost);
+    public void createPost(MemberDetails memberDetails, PostRequest.postRequestDto postRequestDto){
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        Post newpost = new Post(postRequestDto, member.getId());
+        MemberPost memberPost = MemberPost.createMemberPost(member, newpost);
         newpost.getMemberPostList().add(memberPost);
         postRepository.save(newpost);
     }
@@ -72,12 +77,16 @@ public class PostService {
         Optional<Post> optionalPost = postRepository.findById(postId);
         postRepository.delete(optionalPost.get());
     }
-    public List<PostResponse.allpostsresponseDto> allposts(String data) {
+    public List<PostResponse.allpostsresponseDto> allposts(MemberDetails memberDetails) {
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
         List<Post> allPosts = postRepository.findAll();
         LocalDateTime todayDate = LocalDate.now().atStartOfDay();
 
         List<PostResponse.allpostsresponseDto> filteredPosts = allPosts.stream()
-                .filter(post -> !post.getMeetTime().isBefore(todayDate) && String.valueOf(post.getRecruitmentGender()).equals(data))
+                .filter(post -> !post.getMeetTime().isBefore(todayDate) && (post.getRecruitmentGender().equals(member.getMemberGender()) || String.valueOf(post.getRecruitmentGender()).equals("ALL")))
                 .map(post -> {
                     int currentNumberOfPeople = postApplicationRepository.countByPost_Id(post.getId());
                     return new PostResponse.allpostsresponseDto(
@@ -95,11 +104,16 @@ public class PostService {
         return filteredPosts;
     }
 
-    public List<PostResponse.mypostsresponseDto> myposts(Long memberId){
+    public List<PostResponse.mypostsresponseDto> myposts(MemberDetails memberDetails){
         List<Post> allPosts = postRepository.findAll();
         LocalDateTime todayDate = LocalDate.now().atStartOfDay();
+
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
         List<PostResponse.mypostsresponseDto> filteredPosts = allPosts.stream()
-                .filter(post -> post.getMemberId().equals(memberId) && !post.getMeetTime().isBefore(todayDate))
+                .filter(post -> post.getMemberId().equals(member.getId()) && !post.getMeetTime().isBefore(todayDate))
                 .map(post -> {
                     int currentNumberOfPeople = postApplicationRepository.countByPost_Id(post.getId());
                     return new PostResponse.mypostsresponseDto(
@@ -116,9 +130,12 @@ public class PostService {
         return filteredPosts;
     }
 
-    public List<PostResponse.mypostsresponseDto> myapplicants(Long memberId){
+    public List<PostResponse.mypostsresponseDto> myapplicants(MemberDetails memberDetails){
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
 
-        List<PostApplication> applications = postApplicationRepository.findByMember_Id(memberId);
+        List<PostApplication> applications = postApplicationRepository.findByMember_Id(member.getId());
 
         List<Long> postIds = applications.stream()
                 .map(application -> application.getPost().getId())
@@ -145,13 +162,16 @@ public class PostService {
 
         return filteredPosts;
     }
-    public void applyToPost(Long postId, Long memberId) throws Exception {
+    public void applyToPost(Long postId, MemberDetails memberDetails) throws Exception {
         Optional<Post> optionalPost = postRepository.findById(postId);
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
-        int status = postApplicationRepository.countByMember_IdAndPost_Id(memberId,postId);
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        int status = postApplicationRepository.countByMember_IdAndPost_Id(member.getId(),postId);
 
         if (status == 0) {
-            PostApplication postApplication = PostApplication.createPostApplication(optionalMember.get(), optionalPost.get());
+            PostApplication postApplication = PostApplication.createPostApplication(member, optionalPost.get());
             optionalPost.get().getPostApplications().add(postApplication);
             postRepository.save(optionalPost.get());
         } else {
@@ -166,5 +186,14 @@ public class PostService {
     }
 
 
+    public void deleteApplicant(Long postId, MemberDetails memberDetails) {
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        Optional<PostApplication> optionalPostApplication = postApplicationRepository.findByMember_IdAndPost_Id(member.getId(), postId);
+
+        postApplicationRepository.delete(optionalPostApplication.get());
+    }
 }
 

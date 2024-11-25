@@ -11,14 +11,9 @@ public class WeightRequest {
             double memberSkeletalmuscle,
             double memberBodyfat,
             @DateTimeFormat(pattern = "yyyy-MM-dd")
-            LocalDate today,
-            Long memberId
+            LocalDate today
 
     ){}
 
-    public record searchWeightRequestDto(
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
-            LocalDate today,
-            Long memberId
-    ){}
+
 }

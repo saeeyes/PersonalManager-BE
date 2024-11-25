@@ -46,7 +46,7 @@ public class Post extends BaseEntity {
     private List<PostApplication> postApplications = new ArrayList<>();
 
     @Builder
-    public Post(PostRequest.postRequestDto postRequestDto){
+    public Post(PostRequest.postRequestDto postRequestDto, Long memberId){
         this.postTitle = postRequestDto.postTitle();
         this.postContent = postRequestDto.postContent();
         this.exerciseName = postRequestDto.exerciseName();
@@ -54,6 +54,6 @@ public class Post extends BaseEntity {
         this.meetPlace = postRequestDto.meetPlace();
         this.numberOfPeople = postRequestDto.numberOfPeople();
         this.recruitmentGender = postRequestDto.recruitmentGender();
-        this.memberId = postRequestDto.memberId();
+        this.memberId = memberId;
     }
 }

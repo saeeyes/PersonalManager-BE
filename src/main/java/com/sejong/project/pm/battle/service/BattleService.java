@@ -6,6 +6,9 @@ import com.sejong.project.pm.battle.dto.BattleRequest;
 import com.sejong.project.pm.battle.dto.BattleResponse;
 import com.sejong.project.pm.battle.repository.BattlePhraseRepository;
 import com.sejong.project.pm.battle.repository.BattleRepository;
+import com.sejong.project.pm.global.exception.BaseException;
+import com.sejong.project.pm.global.exception.codes.ErrorCode;
+import com.sejong.project.pm.member.dto.MemberDetails;
 import com.sejong.project.pm.member.model.Member;
 import com.sejong.project.pm.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.MEMBER_NOT_FOUND;
 
 
 @Service
@@ -33,13 +37,12 @@ public class BattleService {
 
 
     // 초대 룸 생성
-    public Long createroom(BattleRequest.createBattleRequestDto createBattleRequestDto) {
-        System.out.println(createBattleRequestDto);
-        Optional<Member> optionalmember = memberRepository.findById(createBattleRequestDto.member1Id());
-        Member member1 = optionalmember.get();
-        System.out.println(member1);
-        Battle newbattle = new Battle(member1, member1.getMemberWeight(), createBattleRequestDto.member1TargetWeight(), createBattleRequestDto.targetDay());
-        System.out.println(member1);
+    public Long createroom(MemberDetails memberDetails, BattleRequest.createBattleRequestDto createBattleRequestDto) {
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+
+        Battle newbattle = new Battle(member, member.getMemberWeight(), createBattleRequestDto.member1TargetWeight(), createBattleRequestDto.targetDay());
         battleRepository.save(newbattle);
 
         return newbattle.getBattleId();
@@ -60,14 +63,17 @@ public class BattleService {
     }
 
     // 초대 코드 조회
-    public void acceptbattle(BattleRequest.acceptBattleRequestDto acceptBattleRequestDto) {
+    public void acceptbattle(MemberDetails memberDetails, BattleRequest.acceptBattleRequestDto acceptBattleRequestDto) {
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
         Optional<Battle> optionalBattle = battleRepository.findByInviteCode(acceptBattleRequestDto.inviteCode());
         Battle battle = optionalBattle.get();
 
-        Optional<Member> optionalMember = memberRepository.findById(acceptBattleRequestDto.member2Id());
-        battle.setMember2Id(optionalMember.get());
+        battle.setMember2Id(member);
         battle.setMember2TargetWeight(acceptBattleRequestDto.member2TargetWeight());
-        battle.setMember2StartWeight(optionalMember.get().getMemberWeight());
+        battle.setMember2StartWeight(member.getMemberWeight());
         battleRepository.save(battle);
     }
 
@@ -110,14 +116,17 @@ public class BattleService {
     }
 
 
-    public List<BattleResponse.battleListDto> battlelist(Long memberId) {
+    public List<BattleResponse.battleListDto> battlelist(MemberDetails memberDetails) {
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
 
         List<Battle> allBattles = battleRepository.findAll();
         LocalDate today = LocalDate.now();
 
         List<BattleResponse.battleListDto> filteredBattles = allBattles.stream()
                 .filter(battle ->
-                        (battle.getMember1Id().getId().equals(memberId) || battle.getMember2Id().getId().equals(memberId)) &&
+                        (battle.getMember1Id().getId().equals(member.getId()) || battle.getMember2Id().getId().equals(member.getId())) &&
                                 !battle.getTargetDay().isBefore(today) && battle.getMember2Id() != null
                 )
                 .map(battle -> {
@@ -125,7 +134,7 @@ public class BattleService {
                     String opponentName;
                     String opponentImage;
 
-                    if (battle.getMember1Id().getId().equals(memberId)) {
+                    if (battle.getMember1Id().getId().equals(member.getId())) {
                         opponentName = battle.getMember2Id().getMemberName();
                         opponentImage = battle.getMember2Id().getMemberImage();
                     } else {
@@ -143,16 +152,17 @@ public class BattleService {
                 })
                 .collect(Collectors.toList());
 
-        System.out.println(filteredBattles);
         return filteredBattles;
     }
 
 
-    public BattleResponse.battleResultDto battleResultDto(BattleRequest.resultBattleRequestDto resultBattleRequestDto) {
-        Battle battle = battleRepository.findById(resultBattleRequestDto.battleId())
+    public BattleResponse.battleResultDto battleResultDto(Long battleId, MemberDetails memberDetails) {
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        Battle battle = battleRepository.findById(battleId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid battle ID"));
-        Member member = memberRepository.findById(resultBattleRequestDto.memberId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
 
         double member1RemainWeight = battle.getMember1Id().getMemberWeight() - battle.getMember1TargetWeight();
         double member2RemainWeight = battle.getMember2Id().getMemberWeight() - battle.getMember2TargetWeight();
@@ -162,9 +172,13 @@ public class BattleService {
                 || (!isMember1 && member1RemainWeight >= member2RemainWeight);
 
         BattlePhrase.State resultState = isWinner ? BattlePhrase.State.WINNER : BattlePhrase.State.LOSER;
+
+        String opponentName = isMember1 ? battle.getMember2Id().getMemberName() : battle.getMember1Id().getMemberName();
+        BattlePhrase.State opponentState = isWinner ? BattlePhrase.State.LOSER : BattlePhrase.State.WINNER;
+
         String phrase = getRandomPhrase(resultState);
 
-        return new BattleResponse.battleResultDto(member.getMemberName(), resultState, phrase);
+        return new BattleResponse.battleResultDto(member.getMemberName(), resultState, opponentName, opponentState, phrase);
     }
 
     private String getRandomPhrase(BattlePhrase.State state) {
