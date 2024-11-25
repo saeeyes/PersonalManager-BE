@@ -19,13 +19,18 @@ public class FoodController {
     private FoodService foodService;
 
     @GetMapping("/food/search")
-    private BaseResponse<?> searchFood(@AuthenticationPrincipal MemberDetails member, @RequestBody searchFoodDto searchFoodDto){
+    private BaseResponse<?> searchFood(@AuthenticationPrincipal MemberDetails member, @RequestBody FoodRequest.FoodIdDto searchFoodDto){
         return BaseResponse.onSuccess(foodService.searchFood(searchFoodDto));
+    }
+
+    @GetMapping("/food/searchList")
+    private BaseResponse<?> searchList(@AuthenticationPrincipal MemberDetails member, @RequestBody searchFoodDto request){
+        return BaseResponse.onSuccess(foodService.searchFoodList(request));
     }
 
     @GetMapping("/food/searchAll")
     private BaseResponse<?> searchAllFood(@AuthenticationPrincipal MemberDetails member){
-        return BaseResponse.onSuccess(foodService.searchAllFood(member));
+        return BaseResponse.onSuccess(foodService.searchAllFood());
     }
 
     @GetMapping("/food/getEatingFoodToday")
@@ -49,7 +54,7 @@ public class FoodController {
     }
 
     @DeleteMapping("/food/deleteEatingFood")
-    private BaseResponse<?> deleteEatingFood(@AuthenticationPrincipal MemberDetails member, @RequestBody FoodRequest.DeleteEatingFood request){
+    private BaseResponse<?> deleteEatingFood(@AuthenticationPrincipal MemberDetails member, @RequestBody FoodRequest.FoodIdDto request){
         return BaseResponse.onSuccess(foodService.deleteEatingFood(member,request));
     }
 

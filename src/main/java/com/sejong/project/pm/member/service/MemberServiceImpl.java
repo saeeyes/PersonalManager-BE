@@ -154,6 +154,7 @@ public class MemberServiceImpl implements MemberService {
     // 소비 칼로리 다이어트랑, 칼로리 계산 하는거 넣기  / 회원가입 후에 정보 입력 받을 모델 필요함.
     public String profileSetting(MemberDetails memberDetails, MemberRequest.ProfileSetting request){
         //member받아오기
+
         Member member = memberRepository
                 .findMemberByMemberEmail(memberDetails.getUsername())
                 .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
