@@ -6,6 +6,7 @@ import com.sejong.project.pm.exercise.dto.ExerciseRequest;
 import com.sejong.project.pm.exercise.dto.ExerciseResponse;
 import com.sejong.project.pm.exercise.repository.ExerciseRepository;
 import com.sejong.project.pm.exercise.repository.MemberExerciseRepository;
+import com.sejong.project.pm.food.MemberFood;
 import com.sejong.project.pm.global.exception.BaseException;
 import com.sejong.project.pm.global.handler.MyExceptionHandler;
 import com.sejong.project.pm.member.dto.MemberDetails;
@@ -118,4 +119,9 @@ public class ExerciseServiceImpl implements ExerciseService{
         return searchResultLlist;
     }
 
+    public List<ExerciseResponse.searchResultDto> deleteExercise(MemberDetails member, ExerciseRequest.ExerciseIdDto request){
+        Exercise exercise = exerciseRepository.findById(request.exerciseId()).orElseThrow(() -> new BaseException(BAD_REQUEST));;
+        exerciseRepository.delete(exercise);
+        return searchAllExercise();
+    }
 }

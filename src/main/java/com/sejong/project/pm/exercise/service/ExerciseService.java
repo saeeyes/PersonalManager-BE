@@ -17,4 +17,6 @@ public interface ExerciseService {
     void saveExercise(ExerciseRequest.saveExerciseDto saveExercise,@AuthenticationPrincipal MemberDetails member);
     List<ExerciseResponse.searchResultDto> searchExercise(ExerciseRequest.searchExerciseDto searchexercise);
     List<ExerciseResponse.searchResultDto> searchAllExercise();
+
+    List<ExerciseResponse.searchResultDto> deleteExercise(MemberDetails member, ExerciseRequest.ExerciseIdDto request);
 }
