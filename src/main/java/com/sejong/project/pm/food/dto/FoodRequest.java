@@ -3,6 +3,9 @@ package com.sejong.project.pm.food.dto;
 import com.sejong.project.pm.food.MemberFood;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class FoodRequest {
     public record searchFoodDto(
             @NotEmpty String word
@@ -27,6 +30,10 @@ public class FoodRequest {
 
     public record FoodIdDto(
        @NotEmpty Long id
+    ){}
+
+    public record DateDto(
+            LocalDate date
     ){}
 
 }

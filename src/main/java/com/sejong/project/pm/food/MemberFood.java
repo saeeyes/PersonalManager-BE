@@ -31,6 +31,8 @@ public class MemberFood extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    private FoodTime foodtime;
+
     public enum FoodTime{
         MORNING("MORNING"),
         LUNCH("LUNCH"),

@@ -40,7 +40,7 @@ public class FoodController {
 
     @GetMapping("/food/getEatingFood")
     private BaseResponse<?> getEatingFood(@AuthenticationPrincipal MemberDetails member){
-        return BaseResponse.onSuccess(foodService.getEatingFood(member));
+        return BaseResponse.onSuccess(foodService.getAllEatingFood(member));
     }
 
     @PostMapping("/food/addFood")
@@ -56,6 +56,11 @@ public class FoodController {
     @DeleteMapping("/food/deleteEatingFood")
     private BaseResponse<?> deleteEatingFood(@AuthenticationPrincipal MemberDetails member, @RequestBody FoodRequest.FoodIdDto request){
         return BaseResponse.onSuccess(foodService.deleteEatingFood(member,request));
+    }
+
+    @GetMapping("/food/eatingByDate")
+    private BaseResponse<?> eatingByDate(@AuthenticationPrincipal MemberDetails member, @RequestBody FoodRequest.DateDto request){
+        return BaseResponse.onSuccess(foodService.eatingByDate(member,request));
     }
 
 

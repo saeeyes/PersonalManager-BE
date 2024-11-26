@@ -5,6 +5,7 @@ import com.sejong.project.pm.food.MemberFood;
 import com.sejong.project.pm.food.dto.FoodRequest;
 import com.sejong.project.pm.food.dto.FoodRequest.searchFoodDto;
 import com.sejong.project.pm.food.dto.FoodRequest.AddFoodDTO;
+import com.sejong.project.pm.food.dto.FoodResponse;
 import com.sejong.project.pm.food.dto.FoodResponse.FoodDTO;
 import com.sejong.project.pm.food.dto.FoodResponse.SearchFood;
 import com.sejong.project.pm.food.repository.FoodRepository;
@@ -18,13 +19,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.sejong.project.pm.global.exception.codes.ErrorCode.BAD_REQUEST;
-import static com.sejong.project.pm.global.exception.codes.ErrorCode.BAD_REQUEST_ERROR;
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.*;
 
 @Service
 @Slf4j
@@ -62,6 +64,99 @@ public class FoodServicelmpl implements FoodService{
         return target;
     }
 
+    public FoodResponse.foodByDateDto eatingByDate(MemberDetails memberDetails, FoodRequest.DateDto request){
+        Member member = memberRepository.findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        List<String> caloriesStr = Arrays.stream(member.getMemberCarprofat().split(":")).toList();//탄단지 :기준으로 나뉨 칼로리
+        List<Integer> targetCalories = new ArrayList<>();
+        List<Integer> nowCalories = new ArrayList<>();
+        for(int i=0;i<3;i++) nowCalories.add(0);
+
+        for(String s : caloriesStr) targetCalories.add(Integer.parseInt(s));
+
+        List<SearchFood> morning = new ArrayList<>();
+        List<SearchFood> lunch = new ArrayList<>();
+        List<SearchFood> dinner = new ArrayList<>();
+        List<FoodResponse.eatingFoodDTO> eatingFoodDTO = getEatingFoodByDate(memberDetails,request.date());
+
+        for(FoodResponse.eatingFoodDTO food: eatingFoodDTO){
+
+            SearchFood searchFoodDto = new SearchFood(
+                    food.foodName(),
+                    food.foodCalories(),
+                    food.manufacturingCompany()
+            );
+
+            nowCalories.set(0, (int) (food.carbohydrate()*food.eatingAmoung()));
+            nowCalories.set(1, (int) (food.protein()*food.eatingAmoung()));
+            nowCalories.set(2, (int) (food.fat()*food.eatingAmoung()));
+
+            if(food.foodTime() == MemberFood.FoodTime.MORNING){
+                morning.add(searchFoodDto);
+            }
+            else if(food.foodTime() == MemberFood.FoodTime.LUNCH){
+                lunch.add(searchFoodDto);
+            }
+            else if(food.foodTime() == MemberFood.FoodTime.DINNER){
+                dinner.add(searchFoodDto);
+            }
+
+        }
+
+        FoodResponse.foodByDateDto foodBydateDto = new FoodResponse.foodByDateDto(
+                targetCalories,
+                nowCalories,
+                morning,
+                lunch,
+                dinner
+        );
+        return foodBydateDto;
+    }
+
+
+    public List<FoodResponse.eatingFoodDTO> getEatingFoodByDate(MemberDetails memberDetails, LocalDate date){
+
+        List<MemberFood> eatingFood = getMemberFood(memberDetails);
+        List<FoodResponse.eatingFoodDTO> foodByDate = new ArrayList<>();
+
+        for(MemberFood memberFood : eatingFood){
+            LocalDate memberLocalDate = memberFood.getCreatedAt().toLocalDate();
+            if(memberLocalDate.isEqual(date)){
+                foodByDate.add(
+                        new FoodResponse.eatingFoodDTO(
+                                memberFood.getFood().getFoodName(),
+                                memberFood.getFood().getFoodCalories(),
+                                memberFood.getFood().getManufacturingCompany(),
+                                memberFood.getFood().getProtein(),
+                                memberFood.getFood().getCarbohydrate(),
+                                memberFood.getFood().getFat(),
+                                memberFood.getFoodtime(),
+                                memberFood.getEatingAmount()
+                        )
+                );
+            }
+        }
+        return foodByDate;
+    }
+
+    public List<FoodDTO> getAllEatingFood(MemberDetails member){
+        List<FoodDTO> searchFoods = new ArrayList<>();
+        List<MemberFood> memberFoods = getMemberFood(member);
+
+        for(MemberFood mf : memberFoods) searchFoods.add(
+                new FoodDTO(
+                        mf.getFood().getFoodName(),
+                        mf.getFood().getFoodCalories(),
+                        mf.getFood().getManufacturingCompany(),
+                        mf.getFood().getProtein(),
+                        mf.getFood().getCarbohydrate(),
+                        mf.getFood().getFat()
+                )
+        );
+        return searchFoods;
+    }
+
     public List<SearchFood> searchAllFood(){
         List<Food> foodList = foodRepository.findAll();
         if(foodList.isEmpty() || foodList==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
@@ -77,23 +172,6 @@ public class FoodServicelmpl implements FoodService{
                     fd.getManufacturingCompany()
             ));
         }
-        return searchFoods;
-    }
-
-    public List<FoodDTO> getEatingFood(MemberDetails member){
-        List<FoodDTO> searchFoods = new ArrayList<>();
-        List<MemberFood> memberFoods = getMemberFood(member);
-
-        for(MemberFood mf : memberFoods) searchFoods.add(
-                new FoodDTO(
-                        mf.getFood().getFoodName(),
-                        mf.getFood().getFoodCalories(),
-                        mf.getFood().getManufacturingCompany(),
-                        mf.getFood().getProtein(),
-                        mf.getFood().getCarbohydrate(),
-                        mf.getFood().getFat()
-                )
-        );
         return searchFoods;
     }
 
@@ -124,7 +202,11 @@ public class FoodServicelmpl implements FoodService{
         return false;
     }
 
-    public List<MemberFood> getMemberFood(MemberDetails member){
+    public List<MemberFood> getMemberFood(MemberDetails memberDetails){
+        Member member = memberRepository.findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+
         List<MemberFood> memberFoods = memberFoodRepository.findByMember(null);
 
         if(memberFoods.isEmpty() || memberFoods==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
@@ -198,7 +280,7 @@ public class FoodServicelmpl implements FoodService{
     public List<FoodDTO> deleteEatingFood(MemberDetails member, FoodRequest.FoodIdDto request){
         MemberFood memberFood = memberFoodRepository.findById(request.id()).orElseThrow(() -> new BaseException(BAD_REQUEST));;
         memberFoodRepository.delete(memberFood);
-        return getEatingFood(member);
+        return getEatingFoodToday(member);
     }
 
 }

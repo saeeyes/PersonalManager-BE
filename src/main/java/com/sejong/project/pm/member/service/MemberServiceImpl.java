@@ -206,7 +206,7 @@ public class MemberServiceImpl implements MemberService {
         List<String> percent = Arrays.stream(carprofatPercent.split(":")).toList();
 
         for(int i=0;i<percent.size()-1;i++){
-            int tmp = Integer.parseInt(percent.get(i));
+            int tmp = Integer.parseInt(percent.get(i))*targetCalories/10;
             carprofat+=(tmp+":");
         }
         carprofat += percent.get(percent.size()-1);
