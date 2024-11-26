@@ -35,23 +35,34 @@ public class FoodServicelmpl implements FoodService{
     private FoodRepository foodRepository;
     private MemberFoodRepository memberFoodRepository;
 
-    public List<SearchFood> searchFood(searchFoodDto searchFoodDto){
+    public FoodDTO searchFood(FoodRequest.FoodIdDto request){
 
-        Food foodList = foodRepository.findByFoodName(searchFoodDto.foodname());
-        if(foodList==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
+        Food food = foodRepository.findById(request.id()).orElseThrow(() -> new BaseException(BAD_REQUEST));;
 
-        List<SearchFood> searchFoods = new ArrayList<>();
+        FoodDTO foodDetail = new FoodDTO(
+                food.getFoodName(),
+                food.getFoodCalories(),
+                food.getManufacturingCompany(),
+                food.getProtein(),
+                food.getCarbohydrate(),
+                food.getFat()
+        );
 
-            searchFoods.add(new SearchFood(
-                    foodList.getFoodName(),
-                    foodList.getFoodCalories(),
-                    foodList.getManufacturingCompany()
-            ));
-
-        return searchFoods;
+        return foodDetail;
     }
 
-    public List<SearchFood> searchAllFood(MemberDetails member){
+    public List<SearchFood> searchFoodList(searchFoodDto request){
+        List<SearchFood> searchFoodList = searchAllFood();
+        List<SearchFood> target = new ArrayList<>();
+        for(SearchFood searchFood : searchFoodList){
+            if(searchFood.foodname().contains(request.word())){
+                target.add(searchFood);
+            }
+        }
+        return target;
+    }
+
+    public List<SearchFood> searchAllFood(){
         List<Food> foodList = foodRepository.findAll();
         if(foodList.isEmpty() || foodList==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
 
@@ -184,7 +195,7 @@ public class FoodServicelmpl implements FoodService{
         return food;
     }
 
-    public List<FoodDTO> deleteEatingFood(MemberDetails member, FoodRequest.DeleteEatingFood request){
+    public List<FoodDTO> deleteEatingFood(MemberDetails member, FoodRequest.FoodIdDto request){
         MemberFood memberFood = memberFoodRepository.findById(request.id()).orElseThrow(() -> new BaseException(BAD_REQUEST));;
         memberFoodRepository.delete(memberFood);
         return getEatingFood(member);

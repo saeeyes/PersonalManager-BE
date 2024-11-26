@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 public class FoodRequest {
     public record searchFoodDto(
-            @NotEmpty String foodname
+            @NotEmpty String word
     ){}
 
     public record AddFoodDTO(
@@ -25,7 +25,7 @@ public class FoodRequest {
        @NotEmpty String foodname
     ){}
 
-    public record DeleteEatingFood(
+    public record FoodIdDto(
        @NotEmpty Long id
     ){}
 
