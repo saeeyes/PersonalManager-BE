@@ -152,12 +152,23 @@ public class MemberServiceImpl implements MemberService {
 
     //회원 가입 후 사용자 정보 입력 하는 공간
     // 소비 칼로리 다이어트랑, 칼로리 계산 하는거 넣기  / 회원가입 후에 정보 입력 받을 모델 필요함.
+
+    public boolean isProfile(MemberDetails memberDetails){
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+        return member.isProfile();
+    }
+
+    @Transactional
     public String profileSetting(MemberDetails memberDetails, MemberRequest.ProfileSetting request){
-        //member받아오기
+        System.out.println("enter profile setting2");
 
         Member member = memberRepository
                 .findMemberByMemberEmail(memberDetails.getUsername())
                 .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        System.out.println("enter profile setting3");
 
         //사용자 칼로리 계산
         int targetCalories = calCalories(
@@ -182,6 +193,10 @@ public class MemberServiceImpl implements MemberService {
                 carprofat
         );
 
+        member.setProfile(true);
+
+        memberRepository.save(member);
+
         return "success";
     }
 
@@ -201,7 +216,8 @@ public class MemberServiceImpl implements MemberService {
 
     public String calCarprofat(Member member, MemberRequest.ProfileSetting request,int targetCalories){
         String carprofat = "";
-        String carprofatPercent = request.memberDietType().getPercent();
+        member.setMemberDietType(request.memberDietType());
+        String carprofatPercent = member.getMemberDietType().getPercent();
 
         List<String> percent = Arrays.stream(carprofatPercent.split(":")).toList();
 
@@ -209,7 +225,7 @@ public class MemberServiceImpl implements MemberService {
             int tmp = Integer.parseInt(percent.get(i))*targetCalories/10;
             carprofat+=(tmp+":");
         }
-        carprofat += percent.get(percent.size()-1);
+        carprofat += Integer.parseInt(percent.get(percent.size()-1))*targetCalories/10;
         return carprofat;
     }
 

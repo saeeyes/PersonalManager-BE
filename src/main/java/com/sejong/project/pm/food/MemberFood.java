@@ -36,7 +36,8 @@ public class MemberFood extends BaseEntity {
     public enum FoodTime{
         MORNING("MORNING"),
         LUNCH("LUNCH"),
-        DINNER("DINNER");
+        DINNER("DINNER"),
+        SNACK("SNACK");
 
         FoodTime(String type){}
 
@@ -44,11 +45,12 @@ public class MemberFood extends BaseEntity {
     }
 
     @Builder
-    public MemberFood(double eatingAmount, int eatingCalories, Food food, Member member) {
+    public MemberFood(double eatingAmount, int eatingCalories, Food food, Member member,FoodTime foodTime) {
         this.eatingAmount = eatingAmount;
         this.eatingCalories = eatingCalories;
         this.food = food;
         this.member = member;
+        this.foodtime = foodTime;
     }
 
 }

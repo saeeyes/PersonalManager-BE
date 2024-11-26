@@ -1,9 +1,12 @@
 package com.sejong.project.pm.exercise.controller;
 
 import com.sejong.project.pm.exercise.dto.ExerciseRequest;
+import com.sejong.project.pm.exercise.dto.ExerciseResponse;
 import com.sejong.project.pm.exercise.service.ExerciseService;
 import com.sejong.project.pm.global.exception.BaseResponse;
 import com.sejong.project.pm.member.dto.MemberDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +30,8 @@ public class ExerciseController {
         return BaseResponse.onSuccess(exerciseService.searchExercise(searchexercise));
     }
 
+    @Operation(summary = "문자열 반복", description = "파라미터로 받은 문자열을 2번 반복합니다.")
+    @Parameter(name = "ExerciseResponse.searchResultDto", description = "response값")
     @GetMapping("/exercise/searchAll")
     private BaseResponse<?> searchExercise(@AuthenticationPrincipal MemberDetails member){
         return BaseResponse.onSuccess(exerciseService.searchAllExercise());
@@ -42,6 +47,7 @@ public class ExerciseController {
     private BaseResponse<?> showTodayExerciseList(@AuthenticationPrincipal MemberDetails member){
         return BaseResponse.onSuccess(exerciseService.showTodayExerciseList(member));
     }
+
 
     @DeleteMapping("/exercise/deleteExercise")
     private BaseResponse<?> deleteExercise(@AuthenticationPrincipal MemberDetails member, ExerciseRequest.ExerciseIdDto request){

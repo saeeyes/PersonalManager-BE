@@ -9,6 +9,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +32,16 @@ public class EyebodyController {
     @GetMapping(value ="/api/getImageList")
     public BaseResponse<?> getImgList2(@AuthenticationPrincipal MemberDetails member) throws Exception {
         return BaseResponse.onSuccess(eyebodyService.getImgList(member));
+    }
+
+    @GetMapping(value ="/api/isImageDate")
+    public BaseResponse<?> isImageDate(@AuthenticationPrincipal MemberDetails member, @RequestParam("date")LocalDate date) throws Exception {
+        return BaseResponse.onSuccess(eyebodyService.isImageDate(member,date));
+    }
+
+    @GetMapping(value ="/api/getImageListDate")
+    public BaseResponse<?> getImageListDate(@AuthenticationPrincipal MemberDetails member, @RequestParam("date")LocalDate date) throws Exception {
+        return BaseResponse.onSuccess(eyebodyService.getImageListDate(member,date));
     }
 
 }

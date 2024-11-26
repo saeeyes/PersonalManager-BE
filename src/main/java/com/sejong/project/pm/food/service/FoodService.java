@@ -10,15 +10,16 @@ import com.sejong.project.pm.food.dto.FoodResponse.SearchFood;
 import com.sejong.project.pm.food.dto.FoodResponse.FoodDTO;
 import com.sejong.project.pm.member.dto.MemberDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FoodService {
-    FoodDTO searchFood(FoodRequest.FoodIdDto searchFoodDto);
+    FoodDTO searchFood(Long searchFoodDto);
     List<SearchFood> searchAllFood();
     List<SearchFood> searchFoodList(searchFoodDto request);
-    FoodResponse.foodByDateDto eatingByDate(MemberDetails memberDetails, FoodRequest.DateDto request);
-
+//    FoodResponse.foodByDateDto eatingByDate(MemberDetails memberDetails, FoodRequest.DateDto request);
+FoodResponse.foodByDateDto eatingByDate(MemberDetails memberDetails, LocalDate request);
 
     List<FoodDTO> getAllEatingFood(MemberDetails member);
     List<FoodDTO> getEatingFoodToday(MemberDetails member);
@@ -27,9 +28,8 @@ public interface FoodService {
     List<MemberFood> getMemberFood(MemberDetails member);
 
     FoodDTO addFood(MemberDetails member, AddFoodDTO request);
-    FoodDTO addEatingFood(MemberDetails member, FoodRequest.AddEatingFood request);
+    List<FoodResponse.eatingFoodDTO> addEatingFood(MemberDetails member, FoodRequest.AddEatingFood request);
 
     List<FoodDTO> deleteEatingFood(MemberDetails member, FoodRequest.FoodIdDto request);
-
-    Food getFood(String foodName);
+    List<Integer> targetCalories(MemberDetails memberDetails);
 }

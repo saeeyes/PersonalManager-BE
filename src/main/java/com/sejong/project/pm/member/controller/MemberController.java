@@ -52,10 +52,16 @@ public class MemberController {
         return BaseResponse.onSuccess(memberService.getMemberAdditionInfo(principal.context(),  request));
     }
 
-    @PostMapping("/profileSetting")
+    @PatchMapping("/profileSetting")
     public BaseResponse<?> profileSetting(@AuthenticationPrincipal MemberDetails principal,
                                                    @Valid @RequestBody ProfileSetting request){
+        System.out.println("enter profile setting1");
         return BaseResponse.onSuccess(memberService.profileSetting(principal, request));
+    }
+
+    @GetMapping("/isProfile")
+    public BaseResponse<?> isProfile(@AuthenticationPrincipal MemberDetails principal){
+        return BaseResponse.onSuccess(memberService.isProfile(principal));
     }
 
 }

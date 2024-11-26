@@ -11,7 +11,7 @@ public class ExerciseRequest {
     ){}
 
     public record doingExerciseDto(
-            String exerciseName,
+            Long exerciseId,
             double exerciseTime
     ){}
 

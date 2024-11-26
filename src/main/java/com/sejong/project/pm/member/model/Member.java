@@ -77,6 +77,8 @@ public class Member extends BaseEntity{
     @OneToMany(mappedBy = "member")
     private List<MemberOAuth> memberOAuths = new ArrayList<>();
 
+    private boolean isProfile=false;
+
     public void encodePassword(String encodedPassword){
         this.memberPassword = encodedPassword;
     }
@@ -85,12 +87,16 @@ public class Member extends BaseEntity{
         DIET("DIET","3:5:2"),
         BULK("BULK","4:4:2");
 
-        DietType(String type,String percent) {}
+        DietType(String type,String percent) {
+            this.type=type;
+            this.percent=percent;
+        }
+
         private String type;
         private String percent;
 
-        public String getPercent() {
-            return percent;
+        public String getPercent(){
+            return this.percent;
         }
     }
 

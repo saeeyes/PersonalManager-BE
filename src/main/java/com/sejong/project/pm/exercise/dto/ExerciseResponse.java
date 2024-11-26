@@ -5,12 +5,14 @@ import java.time.LocalDateTime;
 public class ExerciseResponse {
     public record searchResultDto(
         String exerciseName,
-        int exerciseCaloriesHour
+        int exerciseCaloriesHour,
+        Long exerciseId
     ){}
 
     public record doingExerciseDto(
             String exerciseName,
             int exerciseCalories,
-            LocalDateTime exerciseDate
+            double exerciseTime,
+            Long exerciseId
     ){}
 }

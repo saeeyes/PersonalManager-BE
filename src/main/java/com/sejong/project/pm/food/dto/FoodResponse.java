@@ -6,10 +6,12 @@ import com.sejong.project.pm.food.MemberFood;
 import java.util.List;
 
 public class FoodResponse{
+
     public record SearchFood(
             String foodname,
             int foodCalories,
-            String manufacturingCompany
+            String manufacturingCompany,
+            Long foodId
     ){}
 
     public record FoodDTO(
@@ -29,14 +31,17 @@ public class FoodResponse{
             double carbohydrate,
             double fat,
             MemberFood.FoodTime foodTime,
-            double eatingAmoung
+            double eatingAmoung,
+            Long foodId
+
     ){}
 
     public record foodByDateDto(
             List<Integer> targetCalories,
             List<Integer> nowCalories,
-            List<SearchFood> morning,
-            List<SearchFood> lunch,
-            List<SearchFood> dinner
+            List<String> morning,
+            List<String> lunch,
+            List<String> dinner,
+            List<String> snack
     ){}
 }

@@ -8,8 +8,11 @@ import com.sejong.project.pm.global.exception.BaseResponse;
 import com.sejong.project.pm.member.dto.MemberDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,12 +22,12 @@ public class FoodController {
     private FoodService foodService;
 
     @GetMapping("/food/search")
-    private BaseResponse<?> searchFood(@AuthenticationPrincipal MemberDetails member, @RequestBody FoodRequest.FoodIdDto searchFoodDto){
+    private BaseResponse<?> searchFood(@AuthenticationPrincipal MemberDetails member, @RequestParam(value = "foodId",required = true) Long searchFoodDto){
         return BaseResponse.onSuccess(foodService.searchFood(searchFoodDto));
     }
 
     @GetMapping("/food/searchList")
-    private BaseResponse<?> searchList(@AuthenticationPrincipal MemberDetails member, @RequestBody searchFoodDto request){
+    private BaseResponse<?> searchList(@AuthenticationPrincipal MemberDetails member, @RequestParam("word") searchFoodDto request){
         return BaseResponse.onSuccess(foodService.searchFoodList(request));
     }
 
@@ -59,8 +62,14 @@ public class FoodController {
     }
 
     @GetMapping("/food/eatingByDate")
-    private BaseResponse<?> eatingByDate(@AuthenticationPrincipal MemberDetails member, @RequestBody FoodRequest.DateDto request){
+    private BaseResponse<?> eatingByDate(@AuthenticationPrincipal MemberDetails member, @RequestParam("date") LocalDate request){
+        System.out.println(request);
         return BaseResponse.onSuccess(foodService.eatingByDate(member,request));
+    }
+
+    @GetMapping("/food/targetCalories")
+    private BaseResponse<?> targetCalories(@AuthenticationPrincipal MemberDetails member){
+        return BaseResponse.onSuccess(foodService.targetCalories(member));
     }
 
 

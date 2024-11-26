@@ -38,7 +38,8 @@ public class ExerciseServiceImpl implements ExerciseService{
                 .findMemberByMemberEmail(memberDetails.getUsername())
                 .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
 
-        Exercise exercise = exerciseRepository.findByExerciseName(doingExerciseDto.exerciseName()).orElseThrow(() -> new MyExceptionHandler(BAD_REQUEST_ERROR));
+        Exercise exercise = exerciseRepository.findById(doingExerciseDto.exerciseId()).orElseThrow(() -> new MyExceptionHandler(BAD_REQUEST_ERROR));
+
         int calories = exercise.getExerciseCaloriesHour()*(int)doingExerciseDto.exerciseTime();
         MemberExercise memberExercise = MemberExercise.createMemberExercise(
                 member,
@@ -61,15 +62,14 @@ public class ExerciseServiceImpl implements ExerciseService{
         LocalDate now = LocalDate.now();
 
         for(MemberExercise me : memberExerciseList){
-            if(now.getDayOfMonth() == me.getCreatedAt().getDayOfMonth()){
-                //date같을 경우임
-
+            if(now.equals(me.getCreatedAt().toLocalDate())){
                 int doingCalories = me.getExercise().getExerciseCaloriesHour()*(int)me.getExerciseTime();
 
                 doingExerciseDto.add(new ExerciseResponse.doingExerciseDto(
                     me.getExercise().getExerciseName(),
                         doingCalories,
-                        me.getCreatedAt()
+                        me.getExerciseTime(),
+                        me.getExercise().getId()
                 ));
             }
         }
@@ -94,7 +94,7 @@ public class ExerciseServiceImpl implements ExerciseService{
 
         for(Exercise e : searchFromDb){
             searchResultLlist.add(
-                    new ExerciseResponse.searchResultDto(e.getExerciseName(),e.getExerciseCaloriesHour())
+                    new ExerciseResponse.searchResultDto(e.getExerciseName(),e.getExerciseCaloriesHour(),e.getId())
             );
         }
 
@@ -112,7 +112,7 @@ public class ExerciseServiceImpl implements ExerciseService{
 
         for(Exercise e : searchFromDb){
             searchResultLlist.add(
-                    new ExerciseResponse.searchResultDto(e.getExerciseName(),e.getExerciseCaloriesHour())
+                    new ExerciseResponse.searchResultDto(e.getExerciseName(),e.getExerciseCaloriesHour(),e.getId())
             );
         }
 

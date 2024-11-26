@@ -82,6 +82,8 @@ public enum ErrorCode implements BaseCode {
     NOT_VALID_NUMBER_PEOPLE(HttpStatus.BAD_REQUEST,"G019","방 인원수 설정이 맞지 않음"),
 
     NOT_VALID_ROLE(HttpStatus.BAD_REQUEST,"G020","리더가 아니라 해당 기능은 불가"),
+
+    NOT_VALID_MEMBERFOOD(HttpStatus.BAD_REQUEST,"G021","멤버 음식이 널 값이다."),
     
     //자잘한 에러
     SEARCH_KEYWORD_TOO_SHORT(HttpStatus.BAD_REQUEST, "KEYWORD-0000", "검색어는 3글자부터 입력하세요."),

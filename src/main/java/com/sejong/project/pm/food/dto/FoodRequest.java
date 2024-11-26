@@ -2,6 +2,7 @@ package com.sejong.project.pm.food.dto;
 
 import com.sejong.project.pm.food.MemberFood;
 import jakarta.validation.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,15 +22,18 @@ public class FoodRequest {
              double dietaryFiber,
              double sodium,
              double sugar
+
     ){}
 
     public record AddEatingFood(
        MemberFood.FoodTime foodTime,
-       @NotEmpty String foodname
+       @NotEmpty Long foodId,
+       double eatingAmount
+
     ){}
 
     public record FoodIdDto(
-       @NotEmpty Long id
+       @NotEmpty Long foodId
     ){}
 
     public record DateDto(

@@ -34,12 +34,12 @@ import static com.sejong.project.pm.global.exception.codes.ErrorCode.*;
 public class FoodServicelmpl implements FoodService{
 
     private final MemberRepository memberRepository;
-    private FoodRepository foodRepository;
-    private MemberFoodRepository memberFoodRepository;
+    private final FoodRepository foodRepository;
+    private final MemberFoodRepository memberFoodRepository;
 
-    public FoodDTO searchFood(FoodRequest.FoodIdDto request){
-
-        Food food = foodRepository.findById(request.id()).orElseThrow(() -> new BaseException(BAD_REQUEST));;
+    public FoodDTO searchFood(Long request){
+        System.out.println("enter searchFood");
+        Food food = foodRepository.findById(request).orElseThrow(() -> new BaseException(BAD_REQUEST));;
 
         FoodDTO foodDetail = new FoodDTO(
                 food.getFoodName(),
@@ -64,7 +64,8 @@ public class FoodServicelmpl implements FoodService{
         return target;
     }
 
-    public FoodResponse.foodByDateDto eatingByDate(MemberDetails memberDetails, FoodRequest.DateDto request){
+    public FoodResponse.foodByDateDto eatingByDate(MemberDetails memberDetails, LocalDate request){
+
         Member member = memberRepository.findMemberByMemberEmail(memberDetails.getUsername())
                 .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
 
@@ -75,41 +76,45 @@ public class FoodServicelmpl implements FoodService{
 
         for(String s : caloriesStr) targetCalories.add(Integer.parseInt(s));
 
-        List<SearchFood> morning = new ArrayList<>();
-        List<SearchFood> lunch = new ArrayList<>();
-        List<SearchFood> dinner = new ArrayList<>();
-        List<FoodResponse.eatingFoodDTO> eatingFoodDTO = getEatingFoodByDate(memberDetails,request.date());
+        List<String> morning = new ArrayList<>();
+        List<String> lunch = new ArrayList<>();
+        List<String> dinner = new ArrayList<>();
+        List<String> snack = new ArrayList<>();
+        List<FoodResponse.eatingFoodDTO> eatingFoodDTO = getEatingFoodByDate(memberDetails,request);
+
+        Integer car=0,pro=0,fat=0;
 
         for(FoodResponse.eatingFoodDTO food: eatingFoodDTO){
 
-            SearchFood searchFoodDto = new SearchFood(
-                    food.foodName(),
-                    food.foodCalories(),
-                    food.manufacturingCompany()
-            );
+            car += (int) (food.carbohydrate()*food.eatingAmoung()/100);
+            pro +=  (int) (food.protein()*food.eatingAmoung()/100);
+            fat += (int) (food.fat()*food.eatingAmoung()/100);
 
-            nowCalories.set(0, (int) (food.carbohydrate()*food.eatingAmoung()));
-            nowCalories.set(1, (int) (food.protein()*food.eatingAmoung()));
-            nowCalories.set(2, (int) (food.fat()*food.eatingAmoung()));
-
-            if(food.foodTime() == MemberFood.FoodTime.MORNING){
-                morning.add(searchFoodDto);
+            if(food.foodTime().equals(MemberFood.FoodTime.MORNING)){
+                morning.add(food.foodName());
             }
-            else if(food.foodTime() == MemberFood.FoodTime.LUNCH){
-                lunch.add(searchFoodDto);
+            if(food.foodTime().equals(MemberFood.FoodTime.LUNCH)){
+                lunch.add(food.foodName());
             }
-            else if(food.foodTime() == MemberFood.FoodTime.DINNER){
-                dinner.add(searchFoodDto);
+            if(food.foodTime().equals(MemberFood.FoodTime.DINNER)){
+                dinner.add(food.foodName());
             }
-
+            if(food.foodTime().equals(MemberFood.FoodTime.SNACK)){
+                snack.add(food.foodName());
+            }
         }
+
+        nowCalories.set(0, car);
+        nowCalories.set(1, pro);
+        nowCalories.set(2, fat);
 
         FoodResponse.foodByDateDto foodBydateDto = new FoodResponse.foodByDateDto(
                 targetCalories,
                 nowCalories,
                 morning,
                 lunch,
-                dinner
+                dinner,
+                snack
         );
         return foodBydateDto;
     }
@@ -132,7 +137,8 @@ public class FoodServicelmpl implements FoodService{
                                 memberFood.getFood().getCarbohydrate(),
                                 memberFood.getFood().getFat(),
                                 memberFood.getFoodtime(),
-                                memberFood.getEatingAmount()
+                                memberFood.getEatingAmount(),
+                                memberFood.getFood().getId()
                         )
                 );
             }
@@ -169,7 +175,8 @@ public class FoodServicelmpl implements FoodService{
             searchFoods.add(new SearchFood(
                     fd.getFoodName(),
                     fd.getFoodCalories(),
-                    fd.getManufacturingCompany()
+                    fd.getManufacturingCompany(),
+                    fd.getId()
             ));
         }
         return searchFoods;
@@ -206,10 +213,8 @@ public class FoodServicelmpl implements FoodService{
         Member member = memberRepository.findMemberByMemberEmail(memberDetails.getUsername())
                 .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
 
-
-        List<MemberFood> memberFoods = memberFoodRepository.findByMember(null);
-
-        if(memberFoods.isEmpty() || memberFoods==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
+        List<MemberFood> memberFoods = memberFoodRepository.findByMember(member);
+        if(memberFoods.isEmpty() || memberFoods==null) throw new MyExceptionHandler(NOT_VALID_MEMBERFOOD);
 
         return memberFoods;
     }
@@ -243,9 +248,9 @@ public class FoodServicelmpl implements FoodService{
     }
 
 
-    public FoodDTO addEatingFood(MemberDetails member, FoodRequest.AddEatingFood request){
+    public List<FoodResponse.eatingFoodDTO> addEatingFood(MemberDetails memberDetails, FoodRequest.AddEatingFood request){
 
-        Food food = getFood(request.foodname());
+        Food food = getFood(request.foodId());
 
         FoodDTO response = new FoodDTO(
                 food.getFoodName(),
@@ -256,31 +261,45 @@ public class FoodServicelmpl implements FoodService{
                 food.getFat()
         );
 
-        double eatingAmount=0;
-        Optional<Member> mem = memberRepository.findMemberByMemberName(member.getUsername());
+        double eatingAmount=request.eatingAmount();
 
-        if(!mem.isPresent()) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
-        Member tmp=mem.get();
+        Member member = memberRepository.findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
         MemberFood memberFood = new MemberFood(
             eatingAmount,
                 (int)(food.getFoodCalories()*eatingAmount),
                 food,
-                tmp
+                member,
+                request.foodTime()
         );
 
-        return response;
+        memberFoodRepository.save(memberFood);
+
+        return getEatingFoodByDate(memberDetails,LocalDate.now());
     }
 
-    public Food getFood(String foodName){
-        Food food = foodRepository.findByFoodName(foodName);
+    private Food getFood(Long foodId){
+        Food food = foodRepository.findById(foodId).orElseThrow(() -> new BaseException(BAD_REQUEST));
         if(food==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
         return food;
     }
 
     public List<FoodDTO> deleteEatingFood(MemberDetails member, FoodRequest.FoodIdDto request){
-        MemberFood memberFood = memberFoodRepository.findById(request.id()).orElseThrow(() -> new BaseException(BAD_REQUEST));;
+        MemberFood memberFood = memberFoodRepository.findById(request.foodId()).orElseThrow(() -> new BaseException(BAD_REQUEST));
         memberFoodRepository.delete(memberFood);
         return getEatingFoodToday(member);
+    }
+
+    public List<Integer> targetCalories(MemberDetails memberDetails){
+        Member member = memberRepository.findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        List<String> caloriesStr = Arrays.stream(member.getMemberCarprofat().split(":")).toList();//탄단지 :기준으로 나뉨 칼로리
+        List<Integer> targetCalories = new ArrayList<>();
+        for(String s : caloriesStr) targetCalories.add(Integer.parseInt(s));
+
+        return targetCalories;
     }
 
 }

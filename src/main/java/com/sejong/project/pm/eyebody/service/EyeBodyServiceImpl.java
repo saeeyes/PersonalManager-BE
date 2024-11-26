@@ -21,6 +21,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -36,10 +37,6 @@ public class EyeBodyServiceImpl implements EyebodyService{
     private final String uploadFolderPath = "src/main/resources/static/imgs/";
 
     public String uploadImg(MultipartFile img, MemberDetails memberDetails){
-        System.out.println("enter");
-        System.out.println(memberDetails);
-        System.out.println(memberDetails.getUsername());
-
         Member member = memberRepository
                 .findMemberByMemberEmail(memberDetails.getUsername())
                 .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
@@ -68,12 +65,11 @@ public class EyeBodyServiceImpl implements EyebodyService{
                     }
                 }
 
-
-
                 Eyebody eyebodyImg = eyebodyRepository.save(
                   Eyebody.builder()
                           .title(img.getName())
                           .coverImageUrl(uploadFolderPath)
+                          .member(member)
                           .build()
                 );
 
@@ -166,5 +162,64 @@ public class EyeBodyServiceImpl implements EyebodyService{
             }
         }
         return base64Images;
+    }
+
+    public boolean isImageDate(MemberDetails memberDetails, LocalDate date) {
+        String base64Image = null;
+
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        List<Eyebody> eyebodyList = eyebodyRepository.findByMember(member);
+        for (Eyebody eyebody : eyebodyList) {
+            if (eyebody.getCreatedAt().toLocalDate().equals(date)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getImageListDate(MemberDetails memberDetails, LocalDate date){
+        String base64Image = null;
+
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        List<Eyebody> eyebodyList = eyebodyRepository.findByMember(member);
+
+        for(Eyebody eyebody: eyebodyList){
+            if(eyebody.getCreatedAt().toLocalDate().equals(date)) {
+                String imagePath = eyebody.getCoverImageUrl();
+
+                FileInputStream fis = null;
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                try {
+                    fis = new FileInputStream(imagePath);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                int readCount = 0;
+                byte[] buffer = new byte[1024];
+                byte[] fileArray = null;
+
+                try {
+                    while ((readCount = fis.read(buffer)) != -1) {
+                        baos.write(buffer, 0, readCount);
+                    }
+                    fileArray = baos.toByteArray();
+                    base64Image = Base64.getEncoder().encodeToString(fileArray);
+
+                    fis.close();
+                    baos.close();
+                } catch (IOException e) {
+                    throw new RuntimeException("File Error");
+                }
+            }
+        }
+        return base64Image;
     }
 }
