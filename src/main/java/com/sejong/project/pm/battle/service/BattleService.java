@@ -50,17 +50,41 @@ public class BattleService {
 
     // 초대 코드 생성
     public String createInviteCode(Long battleId) {
-
         Optional<Battle> optionalBattle = battleRepository.findById(battleId);
 
-        String inviteCode = UUID.randomUUID().toString();
+        if (optionalBattle.isEmpty()) {
+            throw new IllegalArgumentException("Battle not found with ID: " + battleId);
+        }
 
         Battle battle = optionalBattle.get();
+
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 6;
+        Random random = new Random();
+        String inviteCode;
+
+        do {
+            inviteCode = random.ints(leftLimit, rightLimit + 1)
+                    .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                    .limit(targetStringLength)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
+        } while (!isValidInviteCode(inviteCode));
+
         battle.setInviteCode(inviteCode);
         battleRepository.save(battle);
         System.out.println(inviteCode);
         return inviteCode;
     }
+
+    // 초대 코드 유효성 검사
+    private boolean isValidInviteCode(String inviteCode) {
+        List<Battle> allBattles = battleRepository.findAll(); // 모든 Battle 가져오기
+        return allBattles.stream()
+                .noneMatch(battle -> inviteCode.equals(battle.getInviteCode()));
+    }
+
 
     // 초대 코드 조회
     public void acceptbattle(MemberDetails memberDetails, BattleRequest.acceptBattleRequestDto acceptBattleRequestDto) {
@@ -115,7 +139,6 @@ public class BattleService {
         return battlestatusDto;
     }
 
-
     public List<BattleResponse.battleListDto> battlelist(MemberDetails memberDetails) {
         Member member = memberRepository
                 .findMemberByMemberEmail(memberDetails.getUsername())
@@ -125,10 +148,15 @@ public class BattleService {
         LocalDate today = LocalDate.now();
 
         List<BattleResponse.battleListDto> filteredBattles = allBattles.stream()
-                .filter(battle ->
-                        (battle.getMember1Id().getId().equals(member.getId()) || battle.getMember2Id().getId().equals(member.getId())) &&
-                                !battle.getTargetDay().isBefore(today) && battle.getMember2Id() != null
-                )
+                .filter(battle -> {
+                    // Member2Id가 null인지 확인
+                    if (battle.getMember2Id() == null) {
+                        return false;
+                    }
+                    return (battle.getMember1Id().getId().equals(member.getId())
+                            || battle.getMember2Id().getId().equals(member.getId()));
+                            //&& !battle.getTargetDay().isBefore(today);
+                })
                 .map(battle -> {
                     // 상대방 정보 추출
                     String opponentName;
@@ -164,8 +192,8 @@ public class BattleService {
         Battle battle = battleRepository.findById(battleId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid battle ID"));
 
-        double member1RemainWeight = battle.getMember1Id().getMemberWeight() - battle.getMember1TargetWeight();
-        double member2RemainWeight = battle.getMember2Id().getMemberWeight() - battle.getMember2TargetWeight();
+        double member1RemainWeight = battle.getMember1Id().getMemberWeight() / battle.getMember1TargetWeight() * 100;
+        double member2RemainWeight = battle.getMember2Id().getMemberWeight() / battle.getMember2TargetWeight() * 100;
 
         boolean isMember1 = member.getId().equals(battle.getMember1Id().getId());
         boolean isWinner = (isMember1 && member1RemainWeight <= member2RemainWeight)

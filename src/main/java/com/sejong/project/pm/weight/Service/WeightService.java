@@ -86,7 +86,9 @@ public class WeightService {
                     );
                 })
                 .collect(Collectors.toList());
+        System.out.println(filteredWeights);
         return filteredWeights;
+
     }
 }
 

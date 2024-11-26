@@ -78,15 +78,17 @@ public class PostService {
         postRepository.delete(optionalPost.get());
     }
     public List<PostResponse.allpostsresponseDto> allposts(MemberDetails memberDetails) {
-        Member member = memberRepository
-                .findMemberByMemberEmail(memberDetails.getUsername())
-                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
 
         List<Post> allPosts = postRepository.findAll();
         LocalDateTime todayDate = LocalDate.now().atStartOfDay();
 
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
         List<PostResponse.allpostsresponseDto> filteredPosts = allPosts.stream()
-                .filter(post -> !post.getMeetTime().isBefore(todayDate) && (post.getRecruitmentGender().equals(member.getMemberGender()) || String.valueOf(post.getRecruitmentGender()).equals("ALL")))
+                .filter(post -> !post.getMeetTime().isBefore(todayDate) && (long) post.getPostApplications().size() < post.getNumberOfPeople()
+                        && (post.getRecruitmentGender().equals(member.getMemberGender()) || String.valueOf(post.getRecruitmentGender()).equals("ALL")))
                 .map(post -> {
                     int currentNumberOfPeople = postApplicationRepository.countByPost_Id(post.getId());
                     return new PostResponse.allpostsresponseDto(

@@ -34,12 +34,12 @@ public class WeightController {
         return BaseResponse.onSuccess("success");
     }
     @GetMapping("dayweight")
-    public BaseResponse<?> dayweight(@AuthenticationPrincipal MemberDetails member, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate today){
+    public BaseResponse<?> dayweight(@AuthenticationPrincipal MemberDetails member,  @RequestParam("today") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate today){
         return BaseResponse.onSuccess(weightService.dayweight(member, today));
     }
 
     @GetMapping("monthweight")
-    public  BaseResponse<?> monthweight(@AuthenticationPrincipal MemberDetails member, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate today){
+    public  BaseResponse<?> monthweight(@AuthenticationPrincipal MemberDetails member, @RequestParam("today") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate today){
         return BaseResponse.onSuccess( weightService.monthweight(member, today));
     }
 }
