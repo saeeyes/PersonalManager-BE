@@ -64,4 +64,8 @@ public class MemberController {
         return BaseResponse.onSuccess(memberService.isProfile(principal));
     }
 
+    @GetMapping("/simpleInfo")
+    public BaseResponse<?> simpleInfo(@AuthenticationPrincipal MemberDetails memberDetails){
+        return BaseResponse.onSuccess(memberService.simpleInfo(memberDetails));
+    }
 }

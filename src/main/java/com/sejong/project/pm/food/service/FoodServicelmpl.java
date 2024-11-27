@@ -104,9 +104,9 @@ public class FoodServicelmpl implements FoodService{
             }
         }
 
-        nowCalories.set(0, car);
-        nowCalories.set(1, pro);
-        nowCalories.set(2, fat);
+        nowCalories.set(0, car*4);
+        nowCalories.set(1, pro*4);
+        nowCalories.set(2, fat*8);
 
         FoodResponse.foodByDateDto foodBydateDto = new FoodResponse.foodByDateDto(
                 targetCalories,

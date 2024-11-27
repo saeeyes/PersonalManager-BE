@@ -229,4 +229,13 @@ public class MemberServiceImpl implements MemberService {
         return carprofat;
     }
 
+    public MemberResponse.SimpleInfo simpleInfo(MemberDetails memberDetails){
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+        return new MemberResponse.SimpleInfo(
+                member.getMemberName(),
+                member.getMemberDietType()
+        );
+    }
 }

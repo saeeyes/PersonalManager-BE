@@ -2,6 +2,7 @@ package com.sejong.project.pm.eyebody.service;
 
 import com.sejong.project.pm.eyebody.CustomMultipartFile;
 import com.sejong.project.pm.eyebody.Eyebody;
+import com.sejong.project.pm.eyebody.dto.EyeBodyResponse;
 import com.sejong.project.pm.eyebody.repository.EyebodyRepository;
 import com.sejong.project.pm.global.exception.BaseException;
 import com.sejong.project.pm.member.dto.MemberDetails;
@@ -122,8 +123,8 @@ public class EyeBodyServiceImpl implements EyebodyService{
         }
         return fileArray;
     }
-    public List<String> getImgList(MemberDetails memberDetails) throws IOException{
-        List<String> base64Images = new ArrayList<>();
+    public List<EyeBodyResponse.EyeBodyDto> getImgList(MemberDetails memberDetails) throws IOException{
+        List<EyeBodyResponse.EyeBodyDto> base64Images = new ArrayList<>();
 
         Member member = memberRepository
                 .findMemberByMemberEmail(memberDetails.getUsername())
@@ -153,7 +154,11 @@ public class EyeBodyServiceImpl implements EyebodyService{
                 }
                 fileArray = baos.toByteArray();
                 String base64Image = Base64.getEncoder().encodeToString(fileArray);
-                base64Images.add(base64Image);
+
+                base64Images.add(new EyeBodyResponse.EyeBodyDto(
+                        base64Image,
+                        eyebody.getId()
+                ));
 
                 fis.close();
                 baos.close();
