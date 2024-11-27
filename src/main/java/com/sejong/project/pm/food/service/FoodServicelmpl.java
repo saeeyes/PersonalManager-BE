@@ -146,6 +146,32 @@ public class FoodServicelmpl implements FoodService{
         return foodByDate;
     }
 
+    public List<FoodResponse.eatingFoodDTO> getEatingFoodByDate(Member member, LocalDate date){
+
+        List<MemberFood> eatingFood = getMemberFood(member);
+        List<FoodResponse.eatingFoodDTO> foodByDate = new ArrayList<>();
+
+        for(MemberFood memberFood : eatingFood){
+            LocalDate memberLocalDate = memberFood.getCreatedAt().toLocalDate();
+            if(memberLocalDate.isEqual(date)){
+                foodByDate.add(
+                        new FoodResponse.eatingFoodDTO(
+                                memberFood.getFood().getFoodName(),
+                                memberFood.getFood().getFoodCalories(),
+                                memberFood.getFood().getManufacturingCompany(),
+                                memberFood.getFood().getProtein(),
+                                memberFood.getFood().getCarbohydrate(),
+                                memberFood.getFood().getFat(),
+                                memberFood.getFoodtime(),
+                                memberFood.getEatingAmount(),
+                                memberFood.getFood().getId()
+                        )
+                );
+            }
+        }
+        return foodByDate;
+    }
+
     public List<FoodDTO> getAllEatingFood(MemberDetails member){
         List<FoodDTO> searchFoods = new ArrayList<>();
         List<MemberFood> memberFoods = getMemberFood(member);
@@ -212,6 +238,13 @@ public class FoodServicelmpl implements FoodService{
     public List<MemberFood> getMemberFood(MemberDetails memberDetails){
         Member member = memberRepository.findMemberByMemberEmail(memberDetails.getUsername())
                 .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        List<MemberFood> memberFoods = memberFoodRepository.findByMember(member);
+        if(memberFoods.isEmpty() || memberFoods==null) throw new MyExceptionHandler(NOT_VALID_MEMBERFOOD);
+
+        return memberFoods;
+    }
+    public List<MemberFood> getMemberFood(Member member){
 
         List<MemberFood> memberFoods = memberFoodRepository.findByMember(member);
         if(memberFoods.isEmpty() || memberFoods==null) throw new MyExceptionHandler(NOT_VALID_MEMBERFOOD);

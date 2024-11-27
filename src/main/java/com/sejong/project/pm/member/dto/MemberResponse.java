@@ -3,6 +3,8 @@ package com.sejong.project.pm.member.dto;
 import com.sejong.project.pm.global.auth.token.vo.TokenResponse;
 import com.sejong.project.pm.member.model.Member;
 
+import java.util.List;
+
 public class MemberResponse {
     public record MemberKakaoSignUpResDto(
             String id,
@@ -24,6 +26,10 @@ public class MemberResponse {
 
     public record TodayInfo(
         int exerciseCalories,
-        int eatingCaloreis
+        int eatingCaloreis,
+        List<String>morning,
+        List<String> lunch,
+        List<String> dinner,
+        List<String> snack
     ){}
 }

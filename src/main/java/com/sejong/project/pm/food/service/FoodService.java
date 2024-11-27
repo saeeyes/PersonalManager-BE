@@ -34,4 +34,7 @@ FoodResponse.foodByDateDto eatingByDate(MemberDetails memberDetails, LocalDate r
     List<FoodDTO> deleteEatingFood(MemberDetails member, FoodRequest.FoodIdDto request);
     List<Integer> targetCalories(MemberDetails memberDetails);
     Integer todayEatingCalories(Member member);
+
+    List<FoodResponse.eatingFoodDTO> getEatingFoodByDate(Member member, LocalDate date);
+    List<MemberFood> getMemberFood(Member member);
 }
