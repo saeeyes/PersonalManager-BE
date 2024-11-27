@@ -14,4 +14,6 @@ public interface WeightRepository extends JpaRepository<Weight, Long> {
     @Query("SELECT w FROM Weight w WHERE MONTH(w.today) = :month AND w.member.id = :memberId")
     List<Weight> findWeightsByCurrentMonthAndMember_Id(@Param("month") int month, @Param("memberId") Long memberId);
 
+    Weight findTopByMember_IdOrderByTodayDesc(Long memberId);
+
 }

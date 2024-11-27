@@ -30,13 +30,12 @@ public class BattelController {
 
     @PostMapping("/acceptbattle")
     public  BaseResponse<?> acceptbattle(@AuthenticationPrincipal MemberDetails member, @RequestBody BattleRequest.acceptBattleRequestDto acceptBattleRequestDto) {
-        battleService.acceptbattle(member, acceptBattleRequestDto);
-        return BaseResponse.onSuccess("success");
+        return BaseResponse.onSuccess( battleService.acceptbattle(member, acceptBattleRequestDto));
     }
 
     @GetMapping("/battlestatus")
-    public  BaseResponse<?> battlestatus(@RequestParam(name = "battleId")Long battleId){
-        BattleResponse.battlestatusDto battleResponse = battleService.battlestatus(battleId);
+    public  BaseResponse<?> battlestatus(@AuthenticationPrincipal MemberDetails member, @RequestParam(name = "battleId")Long battleId){
+        BattleResponse.battlestatusDto battleResponse = battleService.battlestatus(member, battleId);
         return BaseResponse.onSuccess(battleResponse);
     }
 

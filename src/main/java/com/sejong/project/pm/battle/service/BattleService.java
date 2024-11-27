@@ -19,8 +19,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.sejong.project.pm.global.exception.codes.ErrorCode.ALREADY_ENTER_ROOM;
 import static com.sejong.project.pm.global.exception.codes.ErrorCode.MEMBER_NOT_FOUND;
 
 
@@ -87,7 +88,7 @@ public class BattleService {
 
 
     // 초대 코드 조회
-    public void acceptbattle(MemberDetails memberDetails, BattleRequest.acceptBattleRequestDto acceptBattleRequestDto) {
+    public BaseException acceptbattle(MemberDetails memberDetails, BattleRequest.acceptBattleRequestDto acceptBattleRequestDto) {
         Member member = memberRepository
                 .findMemberByMemberEmail(memberDetails.getUsername())
                 .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
@@ -95,13 +96,21 @@ public class BattleService {
         Optional<Battle> optionalBattle = battleRepository.findByInviteCode(acceptBattleRequestDto.inviteCode());
         Battle battle = optionalBattle.get();
 
+        if(battle.getMember2Id() != null){
+            return new BaseException(ALREADY_ENTER_ROOM);
+        }
         battle.setMember2Id(member);
         battle.setMember2TargetWeight(acceptBattleRequestDto.member2TargetWeight());
         battle.setMember2StartWeight(member.getMemberWeight());
         battleRepository.save(battle);
+        return null;
     }
 
-    public BattleResponse.battlestatusDto battlestatus(Long battleId) {
+    public BattleResponse.battlestatusDto battlestatus(MemberDetails memberDetails, Long battleId) {
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
         Optional<Battle> optionalBattle = battleRepository.findById(battleId);
         Battle battle = optionalBattle.get();
 
@@ -123,7 +132,12 @@ public class BattleService {
                 ((battle.getMember2StartWeight() - battle.getMember2Id().getMemberWeight()) /
                         (battle.getMember2StartWeight() - battle.getMember2TargetWeight())) * 100
         );
+
+        boolean isMember1 = member.getId().equals(battle.getMember1Id().getId());
+        Long opponentId = isMember1 ? member2.getId() : member.getId();
+
         BattleResponse.battlestatusDto battlestatusDto = new BattleResponse.battlestatusDto(
+                opponentId,
                 member1.getMemberName(),
                 member2.getMemberName(),
                 member1.getMemberImage(),

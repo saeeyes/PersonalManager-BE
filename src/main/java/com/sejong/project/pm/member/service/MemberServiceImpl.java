@@ -29,7 +29,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
@@ -52,6 +54,8 @@ public class MemberServiceImpl implements MemberService {
     private final KakaoProvider kakaoProvider;
     private final FoodService foodService;
     private final ExerciseService exerciseService;
+
+    private final String uploadFolderPath = "src/main/resources/static/imgs/";
 
     @Transactional
     public String createMember(MemberSignupRequestDto request) {
@@ -195,7 +199,7 @@ public class MemberServiceImpl implements MemberService {
                 member.getMemberGender(),
                 carprofat
         );
-
+        member.setMemberImage("C:\\Users\\SAMSUNG\\OneDrive\\Desktop\\College\\2024_2_Project\\PM-back\\src\\main\\resources\\static\\profileImages\\기본프로필jpeg.jpeg");
         member.setProfile(true);
 
         memberRepository.save(member);

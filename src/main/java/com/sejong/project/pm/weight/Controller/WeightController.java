@@ -22,15 +22,21 @@ public class WeightController {
     @Autowired
     WeightService weightService;
 
+    @GetMapping("/checkweight")
+    public  BaseResponse<?> checkweight(@AuthenticationPrincipal MemberDetails member, @RequestParam("today") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate today){
+            return BaseResponse.onSuccess(weightService.checkweight(member, today));
+    }
+
     @PostMapping("/createweight")
     public BaseResponse<?> createweight(@RequestBody WeightRequest.weightRequestDto weightRequestDto, @AuthenticationPrincipal MemberDetails member){
         weightService.createweight(weightRequestDto, member);
         return BaseResponse.onSuccess("success");
     }
 
-    @PutMapping("/rewriteweight/{weightId}")
-    public  BaseResponse<?> rewritewight(@RequestBody WeightRequest.weightRequestDto weightRequestDto,@AuthenticationPrincipal MemberDetails member, @PathVariable("weightId") Long weightId){
-        weightService.rewriteweight(weightRequestDto, member, weightId);
+    @PutMapping("/rewriteweight")
+    public  BaseResponse<?> rewritewight(@AuthenticationPrincipal MemberDetails member, @RequestBody WeightRequest.weightRequestDto weightRequestDto){
+        System.out.println(weightRequestDto);
+        weightService.rewriteweight(member, weightRequestDto);
         return BaseResponse.onSuccess("success");
     }
     @GetMapping("/dayweight")
