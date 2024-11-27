@@ -68,4 +68,9 @@ public class MemberController {
     public BaseResponse<?> simpleInfo(@AuthenticationPrincipal MemberDetails memberDetails){
         return BaseResponse.onSuccess(memberService.simpleInfo(memberDetails));
     }
+
+    @GetMapping("/getTodyInfo")
+    private BaseResponse<?> eatingByDateById(@AuthenticationPrincipal MemberDetails member, @RequestParam("memberId") Long memberId){
+        return BaseResponse.onSuccess(memberService.eatingByDateById(memberId));
+    }
 }

@@ -302,4 +302,18 @@ public class FoodServicelmpl implements FoodService{
         return targetCalories;
     }
 
+    public Integer todayEatingCalories(Member member){
+        int calories = 0;
+        List<MemberFood> memberFoods = memberFoodRepository.findByMember(member);
+        List<MemberFood> todayMemberFoods = new ArrayList<>();
+
+        for(MemberFood mf : memberFoods){
+            if(mf.getCreatedAt().toLocalDate().equals(LocalDate.now())) todayMemberFoods.add(mf);
+        }
+
+        for(MemberFood mf : memberFoods){
+            calories += mf.getEatingCalories();
+        }
+        return calories;
+    }
 }

@@ -1,5 +1,7 @@
 package com.sejong.project.pm.member.service;
 
+import com.sejong.project.pm.exercise.service.ExerciseService;
+import com.sejong.project.pm.food.service.FoodService;
 import com.sejong.project.pm.global.auth.member.MemberAuthContext;
 import com.sejong.project.pm.global.auth.token.JwtProvider;
 import com.sejong.project.pm.global.auth.token.KakaoProvider;
@@ -49,6 +51,8 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final KakaoProvider kakaoProvider;
+    private final FoodService foodService;
+    private final ExerciseService exerciseService;
 
     @Transactional
     public String createMember(MemberSignupRequestDto request) {
@@ -236,6 +240,20 @@ public class MemberServiceImpl implements MemberService {
         return new MemberResponse.SimpleInfo(
                 member.getMemberName(),
                 member.getMemberDietType()
+        );
+    }
+
+    public MemberResponse.TodayInfo eatingByDateById(Long memberId){
+        Member member = memberRepository
+                .findById(memberId)
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        int eatingCalories = foodService.todayEatingCalories(member);
+        int exerciseCalories = exerciseService.todayExercisingCalories(member);
+
+        return new MemberResponse.TodayInfo(
+                eatingCalories,
+                exerciseCalories
         );
     }
 }

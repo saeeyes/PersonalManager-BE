@@ -21,4 +21,9 @@ public class MemberResponse {
             return new MemberTokenResDto(tokenResponse);
         }
     }
+
+    public record TodayInfo(
+        int exerciseCalories,
+        int eatingCaloreis
+    ){}
 }
