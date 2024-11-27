@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 public class BattleResponse {
     public record battlestatusDto(
+            Long opponentId,
             String member1Name,
             String member2Name,
             String member1Image,
@@ -20,12 +21,14 @@ public class BattleResponse {
             @DateTimeFormat(pattern = "yyyy-MM-dd")
             LocalDate targetDay
     ){
-        public battlestatusDto(  String member1Name, String member2Name,
+        public battlestatusDto(  Long opponentId,
+                                 String member1Name, String member2Name,
                                  String member1Image, String member2Image,
                                  double member1StartWeight, double member2StartWeight,
                                  double member1TargetWeight, double member2TargetWeight,
                                  int member1AttainmentRate, int member2AttainmentRate,
                                  LocalDate targetDay){
+            this.opponentId = opponentId;
             this.member1Name = member1Name;
             this.member2Name = member2Name;
             this.member1Image = member1Image;

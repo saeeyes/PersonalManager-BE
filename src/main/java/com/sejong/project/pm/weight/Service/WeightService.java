@@ -26,38 +26,45 @@ public class WeightService {
     @Autowired
     MemberRepository memberRepository;
 
+    public boolean checkweight(MemberDetails memberDetails, LocalDate today){
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+        return weightRepository.findWeightByMember_IdAndToday(member.getId(), today) != null;
+    }
     public void createweight(WeightRequest.weightRequestDto weightRequestDto, MemberDetails memberDetails) {
         Member member = memberRepository
                 .findMemberByMemberEmail(memberDetails.getUsername())
                 .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
 
         Weight newweight = new Weight(weightRequestDto, member);
-        member.setMemberWeight(newweight.getMemberWeight());
         weightRepository.save(newweight);
-        memberRepository.save(member);
-    }
 
-    public void rewriteweight(WeightRequest.weightRequestDto weightRequestDto,MemberDetails memberDetails, Long weightId) {
-        Optional<Weight> optionalWeight = weightRepository.findById(weightId);
-        Member member = memberRepository
-                .findMemberByMemberEmail(memberDetails.getUsername())
-                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));        Weight findWeight = optionalWeight.get();
-
-        if (weightRequestDto.memberWeight() >= 0.0) {
-            findWeight.setMemberWeight(weightRequestDto.memberWeight());
-            member.setMemberWeight(weightRequestDto.memberWeight());
+        Weight findFinalWeight = weightRepository.findTopByMember_IdOrderByTodayDesc(member.getId());
+        if(findFinalWeight != null && findFinalWeight.getToday().isBefore(newweight.getToday())){
+            member.setMemberWeight(newweight.getMemberWeight());
             memberRepository.save(member);
         }
-        if (weightRequestDto.memberBodyfat() >= 0.0) {
-            findWeight.setMemberBodyfat(weightRequestDto.memberBodyfat());
-        }
-        if (weightRequestDto.memberSkeletalmuscle() >= 0.0) {
-            findWeight.setMemberSkeletalmuscle(weightRequestDto.memberSkeletalmuscle());
-        }
-
-        weightRepository.save(findWeight);
     }
 
+    public void rewriteweight(MemberDetails memberDetails, WeightRequest.weightRequestDto weightRequestDto) {
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        Weight findWeight = weightRepository.findWeightByMember_IdAndToday(member.getId(), weightRequestDto.today());
+        findWeight.setMemberWeight(weightRequestDto.memberWeight());
+        findWeight.setMemberBodyfat(weightRequestDto.memberBodyfat());
+        findWeight.setMemberSkeletalmuscle(weightRequestDto.memberSkeletalmuscle());
+
+        weightRepository.save(findWeight);
+
+        Weight findFinalWeight = weightRepository.findTopByMember_IdOrderByTodayDesc(member.getId());
+        if(findFinalWeight != null && findFinalWeight.getToday().isBefore(findWeight.getToday())){
+            member.setMemberWeight(findWeight.getMemberWeight());
+            memberRepository.save(member);
+        }
+    }
 
     public WeightResponse.weightResponseDto dayweight(MemberDetails memberDetails, LocalDate today) {
         Member member = memberRepository
