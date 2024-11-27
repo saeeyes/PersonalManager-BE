@@ -24,7 +24,8 @@ public class EyebodyController {
         return BaseResponse.onSuccess(eyebodyService.uploadImg(img,memberDetails));
     }
 
-    @GetMapping(value ="/api/getImage", produces= MediaType.IMAGE_PNG_VALUE)
+//    @GetMapping(value ="/api/getImage", produces= MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value ="/api/getImage")
     public BaseResponse<?> getImg(@RequestParam("id") Long id) throws Exception {
         return BaseResponse.onSuccess(eyebodyService.getImg(id));
     }
