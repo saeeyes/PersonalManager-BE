@@ -39,12 +39,12 @@ public class WeightController {
         weightService.rewriteweight(member, weightRequestDto);
         return BaseResponse.onSuccess("success");
     }
-    @GetMapping("dayweight")
+    @GetMapping("/dayweight")
     public BaseResponse<?> dayweight(@AuthenticationPrincipal MemberDetails member,  @RequestParam("today") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate today){
         return BaseResponse.onSuccess(weightService.dayweight(member, today));
     }
 
-    @GetMapping("monthweight")
+    @GetMapping("/monthweight")
     public  BaseResponse<?> monthweight(@AuthenticationPrincipal MemberDetails member, @RequestParam("today") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate today){
         return BaseResponse.onSuccess( weightService.monthweight(member, today));
     }

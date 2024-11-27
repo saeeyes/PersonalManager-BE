@@ -124,4 +124,20 @@ public class ExerciseServiceImpl implements ExerciseService{
         exerciseRepository.delete(exercise);
         return searchAllExercise();
     }
+
+    public Integer todayExercisingCalories(Member member){
+        int calorie=0;
+        List<MemberExercise> memberExercises = memberExerciseRepository.findByMember(member);
+        List<MemberExercise> todayMemberExercises = new ArrayList<>();
+
+        for(MemberExercise me : memberExercises){
+            if(me.getCreatedAt().toLocalDate().equals(LocalDate.now())) todayMemberExercises.add(me);
+        }
+
+        for(MemberExercise me: todayMemberExercises){
+            calorie+= me.getExerciseCalories();
+        }
+
+        return calorie;
+    }
 }

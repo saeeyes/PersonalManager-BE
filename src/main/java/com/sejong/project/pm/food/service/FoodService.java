@@ -9,6 +9,7 @@ import com.sejong.project.pm.food.dto.FoodResponse;
 import com.sejong.project.pm.food.dto.FoodResponse.SearchFood;
 import com.sejong.project.pm.food.dto.FoodResponse.FoodDTO;
 import com.sejong.project.pm.member.dto.MemberDetails;
+import com.sejong.project.pm.member.model.Member;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,4 +33,5 @@ FoodResponse.foodByDateDto eatingByDate(MemberDetails memberDetails, LocalDate r
 
     List<FoodDTO> deleteEatingFood(MemberDetails member, FoodRequest.FoodIdDto request);
     List<Integer> targetCalories(MemberDetails memberDetails);
+    Integer todayEatingCalories(Member member);
 }

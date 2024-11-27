@@ -3,6 +3,7 @@ package com.sejong.project.pm.exercise.service;
 import com.sejong.project.pm.exercise.dto.ExerciseRequest;
 import com.sejong.project.pm.exercise.dto.ExerciseResponse;
 import com.sejong.project.pm.member.dto.MemberDetails;
+import com.sejong.project.pm.member.model.Member;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
@@ -19,4 +20,5 @@ public interface ExerciseService {
     List<ExerciseResponse.searchResultDto> searchAllExercise();
 
     List<ExerciseResponse.searchResultDto> deleteExercise(MemberDetails member, ExerciseRequest.ExerciseIdDto request);
+    Integer todayExercisingCalories(Member member);
 }

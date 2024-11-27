@@ -104,9 +104,9 @@ public class FoodServicelmpl implements FoodService{
             }
         }
 
-        nowCalories.set(0, car);
-        nowCalories.set(1, pro);
-        nowCalories.set(2, fat);
+        nowCalories.set(0, car*4);
+        nowCalories.set(1, pro*4);
+        nowCalories.set(2, fat*8);
 
         FoodResponse.foodByDateDto foodBydateDto = new FoodResponse.foodByDateDto(
                 targetCalories,
@@ -302,4 +302,18 @@ public class FoodServicelmpl implements FoodService{
         return targetCalories;
     }
 
+    public Integer todayEatingCalories(Member member){
+        int calories = 0;
+        List<MemberFood> memberFoods = memberFoodRepository.findByMember(member);
+        List<MemberFood> todayMemberFoods = new ArrayList<>();
+
+        for(MemberFood mf : memberFoods){
+            if(mf.getCreatedAt().toLocalDate().equals(LocalDate.now())) todayMemberFoods.add(mf);
+        }
+
+        for(MemberFood mf : memberFoods){
+            calories += mf.getEatingCalories();
+        }
+        return calories;
+    }
 }

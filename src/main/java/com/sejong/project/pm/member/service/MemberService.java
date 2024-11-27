@@ -22,4 +22,6 @@ public interface MemberService {
     String profileSetting(MemberDetails memberDetails, MemberRequest.ProfileSetting request);
     int calCalories(double memberWeight, double memberHeight, int memberAge, Member.Gender memberGender);
     boolean isProfile(MemberDetails memberDetails);
+    MemberResponse.SimpleInfo simpleInfo(MemberDetails memberDetails);
+    MemberResponse.TodayInfo eatingByDateById(Long memberId);
 }
