@@ -77,6 +77,32 @@ public class ExerciseServiceImpl implements ExerciseService{
         return doingExerciseDto;
     }
 
+    public List<ExerciseResponse.doingExerciseDto> showDateExerciseList(@AuthenticationPrincipal MemberDetails memberDetails, LocalDate localDate){
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        List<MemberExercise> memberExerciseList = memberExerciseRepository.findByMember(member);
+        if(memberExerciseList.isEmpty() || memberExerciseList==null) throw new MyExceptionHandler(BAD_REQUEST_ERROR);
+
+        List<ExerciseResponse.doingExerciseDto> doingExerciseDto = new ArrayList<>();
+
+        for(MemberExercise me : memberExerciseList){
+            if(localDate.equals(me.getCreatedAt().toLocalDate())){
+                int doingCalories = (int)(me.getExercise().getExerciseCaloriesHour()*me.getExerciseTime());
+
+                doingExerciseDto.add(new ExerciseResponse.doingExerciseDto(
+                        me.getExercise().getExerciseName(),
+                        doingCalories,
+                        me.getExerciseTime(),
+                        me.getId()
+                ));
+            }
+        }
+
+        return doingExerciseDto;
+    }
+
     public void saveExercise(ExerciseRequest.saveExerciseDto saveExercise,@AuthenticationPrincipal MemberDetails member){
         //중복체크할 필요가 있을까
         Exercise exercise = Exercise.createExercise(saveExercise);

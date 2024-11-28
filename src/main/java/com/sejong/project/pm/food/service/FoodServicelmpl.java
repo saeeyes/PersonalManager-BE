@@ -82,13 +82,13 @@ public class FoodServicelmpl implements FoodService{
         List<String> snack = new ArrayList<>();
         List<FoodResponse.eatingFoodDTO> eatingFoodDTO = getEatingFoodByDate(memberDetails,request);
 
-        Integer car=0,pro=0,fat=0;
+        Double car=0.0,pro=0.0,fat=0.0;
 
         for(FoodResponse.eatingFoodDTO food: eatingFoodDTO){
 
-            car += (int) (food.carbohydrate()*food.eatingAmoung()/100);
-            pro +=  (int) (food.protein()*food.eatingAmoung()/100);
-            fat += (int) (food.fat()*food.eatingAmoung()/100);
+            car += (food.carbohydrate()*food.eatingAmoung()/100);
+            pro +=  (food.protein()*food.eatingAmoung()/100);
+            fat += (food.fat()*food.eatingAmoung()/100);
 
             if(food.foodTime().equals(MemberFood.FoodTime.MORNING)){
                 morning.add(food.foodName());
@@ -104,9 +104,9 @@ public class FoodServicelmpl implements FoodService{
             }
         }
 
-        nowCalories.set(0, car*4);
-        nowCalories.set(1, pro*4);
-        nowCalories.set(2, fat*8);
+        nowCalories.set(0, (int)(car*4));
+        nowCalories.set(1, (int)(pro*4));
+        nowCalories.set(2, (int)(fat*8));
 
         FoodResponse.foodByDateDto foodBydateDto = new FoodResponse.foodByDateDto(
                 targetCalories,

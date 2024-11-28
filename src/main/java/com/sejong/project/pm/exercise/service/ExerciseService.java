@@ -7,6 +7,7 @@ import com.sejong.project.pm.member.model.Member;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -14,6 +15,7 @@ public interface ExerciseService {
 
     void addDoingExercise(ExerciseRequest.doingExerciseDto doingExerciseDto,@AuthenticationPrincipal MemberDetails member);
     List<ExerciseResponse.doingExerciseDto> showTodayExerciseList(@AuthenticationPrincipal MemberDetails member);
+    List<ExerciseResponse.doingExerciseDto> showDateExerciseList(@AuthenticationPrincipal MemberDetails member, LocalDate localDate);
 
     void saveExercise(ExerciseRequest.saveExerciseDto saveExercise,@AuthenticationPrincipal MemberDetails member);
     List<ExerciseResponse.searchResultDto> searchExercise(ExerciseRequest.searchExerciseDto searchexercise);
