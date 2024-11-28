@@ -63,7 +63,7 @@ public class ExerciseServiceImpl implements ExerciseService{
 
         for(MemberExercise me : memberExerciseList){
             if(now.equals(me.getCreatedAt().toLocalDate())){
-                int doingCalories = me.getExercise().getExerciseCaloriesHour()*(int)me.getExerciseTime();
+                int doingCalories = (int)(me.getExercise().getExerciseCaloriesHour()*me.getExerciseTime());
 
                 doingExerciseDto.add(new ExerciseResponse.doingExerciseDto(
                     me.getExercise().getExerciseName(),
