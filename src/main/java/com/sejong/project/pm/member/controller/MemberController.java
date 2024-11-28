@@ -69,7 +69,7 @@ public class MemberController {
         return BaseResponse.onSuccess(memberService.simpleInfo(memberDetails));
     }
 
-    @GetMapping("/getTodayInfo")
+        @GetMapping("/getTodayInfo")
     private BaseResponse<?> getTodayInfo(@AuthenticationPrincipal MemberDetails member, @RequestParam("memberId") Long memberId){
         return BaseResponse.onSuccess(memberService.eatingByDateById(memberId));
     }

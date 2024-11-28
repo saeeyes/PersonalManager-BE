@@ -275,8 +275,8 @@ public class MemberServiceImpl implements MemberService {
             }
         }
         return new MemberResponse.TodayInfo(
-                eatingCalories,
                 exerciseCalories,
+                eatingCalories,
                 morning,
                 lunch,
                 dinner,
