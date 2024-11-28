@@ -24,13 +24,14 @@ public class EyebodyController {
         return BaseResponse.onSuccess(eyebodyService.uploadImg(img,memberDetails));
     }
 
-    @GetMapping(value ="/api/getImage", produces= MediaType.IMAGE_PNG_VALUE)
-    public byte[] getImg(Long id) throws Exception {
-        return eyebodyService.getImg(id);
+//    @GetMapping(value ="/api/getImage", produces= MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value ="/api/getImage")
+    public BaseResponse<?> getImg(@RequestParam("id") Long id) throws Exception {
+        return BaseResponse.onSuccess(eyebodyService.getImg(id));
     }
 
     @GetMapping(value ="/api/getImageList")
-    public BaseResponse<?> getImgList2(@AuthenticationPrincipal MemberDetails member) throws Exception {
+    public BaseResponse<?> getImgList(@AuthenticationPrincipal MemberDetails member) throws Exception {
         return BaseResponse.onSuccess(eyebodyService.getImgList(member));
     }
 

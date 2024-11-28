@@ -70,7 +70,7 @@ public class MemberController {
     }
 
     @GetMapping("/getTodayInfo")
-    private BaseResponse<?> eatingByDateById(@AuthenticationPrincipal MemberDetails member, @RequestParam("memberId") Long memberId){
+    private BaseResponse<?> getTodayInfo(@AuthenticationPrincipal MemberDetails member, @RequestParam("memberId") Long memberId){
         return BaseResponse.onSuccess(memberService.eatingByDateById(memberId));
     }
 }

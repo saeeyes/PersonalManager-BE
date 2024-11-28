@@ -1,6 +1,8 @@
 package com.sejong.project.pm.member.service;
 
 import com.sejong.project.pm.exercise.service.ExerciseService;
+import com.sejong.project.pm.food.MemberFood;
+import com.sejong.project.pm.food.dto.FoodResponse;
 import com.sejong.project.pm.food.service.FoodService;
 import com.sejong.project.pm.global.auth.member.MemberAuthContext;
 import com.sejong.project.pm.global.auth.token.JwtProvider;
@@ -31,11 +33,8 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 import static com.sejong.project.pm.global.exception.codes.ErrorCode.*;
 import static com.sejong.project.pm.global.properties.JwtProperties.*;
@@ -255,9 +254,34 @@ public class MemberServiceImpl implements MemberService {
         int eatingCalories = foodService.todayEatingCalories(member);
         int exerciseCalories = exerciseService.todayExercisingCalories(member);
 
+        List<String> morning = new ArrayList<>();
+        List<String> lunch = new ArrayList<>();
+        List<String> dinner = new ArrayList<>();
+        List<String> snack = new ArrayList<>();
+        List<FoodResponse.eatingFoodDTO> eatingFoodDTO = foodService.getEatingFoodByDate(member, LocalDate.now());
+
+        for(FoodResponse.eatingFoodDTO food: eatingFoodDTO){
+            if(food.foodTime().equals(MemberFood.FoodTime.MORNING)){
+                morning.add(food.foodName());
+            }
+            if(food.foodTime().equals(MemberFood.FoodTime.LUNCH)){
+                lunch.add(food.foodName());
+            }
+            if(food.foodTime().equals(MemberFood.FoodTime.DINNER)){
+                dinner.add(food.foodName());
+            }
+            if(food.foodTime().equals(MemberFood.FoodTime.SNACK)) {
+                snack.add(food.foodName());
+            }
+        }
         return new MemberResponse.TodayInfo(
                 eatingCalories,
-                exerciseCalories
+                exerciseCalories,
+                morning,
+                lunch,
+                dinner,
+                snack
         );
+
     }
 }

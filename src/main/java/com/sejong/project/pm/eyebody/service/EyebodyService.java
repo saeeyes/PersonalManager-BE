@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface EyebodyService {
     String uploadImg(MultipartFile img, MemberDetails memberDetails);
-    byte[] getImg(Long id) throws IOException;
+    String getImg(Long id) throws IOException;
     List<EyeBodyResponse.EyeBodyDto> getImgList(MemberDetails memberDetails) throws IOException;
     String getImageListDate(MemberDetails memberDetails, LocalDate date);
     boolean isImageDate(MemberDetails memberDetails, LocalDate date);
