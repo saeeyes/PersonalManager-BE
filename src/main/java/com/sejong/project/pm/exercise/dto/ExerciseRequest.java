@@ -18,4 +18,8 @@ public class ExerciseRequest {
     public record ExerciseIdDto(
             Long exerciseId
     ){}
+
+    public record MemberExerciseIdDto(
+            Long memberExerciseId
+    ){}
 }

@@ -21,4 +21,6 @@ public interface ExerciseService {
 
     List<ExerciseResponse.searchResultDto> deleteExercise(MemberDetails member, ExerciseRequest.ExerciseIdDto request);
     Integer todayExercisingCalories(Member member);
+
+    String deleteMemberExercise(MemberDetails memberDetails, ExerciseRequest.MemberExerciseIdDto request);
 }

@@ -54,5 +54,10 @@ public class ExerciseController {
         return BaseResponse.onSuccess(exerciseService.deleteExercise(member,request));
     }
 
+    @DeleteMapping("/exercise/deleteMemberExercise")
+    private BaseResponse<?> deleteMemberExercise(@AuthenticationPrincipal MemberDetails member, ExerciseRequest.MemberExerciseIdDto request){
+        return BaseResponse.onSuccess(exerciseService.deleteMemberExercise(member,request));
+    }
+
 
 }

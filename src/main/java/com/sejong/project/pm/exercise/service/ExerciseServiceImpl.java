@@ -69,7 +69,7 @@ public class ExerciseServiceImpl implements ExerciseService{
                     me.getExercise().getExerciseName(),
                         doingCalories,
                         me.getExerciseTime(),
-                        me.getExercise().getId()
+                        me.getId()
                 ));
             }
         }
@@ -139,5 +139,17 @@ public class ExerciseServiceImpl implements ExerciseService{
         }
 
         return calorie;
+    }
+    public String deleteMemberExercise(MemberDetails memberDetails, ExerciseRequest.MemberExerciseIdDto request){
+        Member member = memberRepository
+                .findMemberByMemberEmail(memberDetails.getUsername())
+                .orElseThrow(() -> new BaseException(MEMBER_NOT_FOUND));
+
+        MemberExercise memberExercise = memberExerciseRepository.findById(request.memberExerciseId())
+                .orElseThrow(() -> new BaseException(BAD_REQUEST));
+
+        memberExerciseRepository.delete(memberExercise);
+
+        return "success";
     }
 }

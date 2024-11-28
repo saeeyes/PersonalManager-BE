@@ -13,6 +13,6 @@ public class ExerciseResponse {
             String exerciseName,
             int exerciseCalories,
             double exerciseTime,
-            Long exerciseId
+            Long memberExerciseId
     ){}
 }
