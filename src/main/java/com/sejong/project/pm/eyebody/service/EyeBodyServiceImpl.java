@@ -93,11 +93,12 @@ public class EyeBodyServiceImpl implements EyebodyService{
         return "success";
     }
 
-    public String getImg(Long id) throws IOException{
+    public EyeBodyResponse.ImageDto getImg(Long id) throws IOException{
 
         Eyebody eyebody = eyebodyRepository.findById(id).get();
 
         String imagePath = eyebody.getCoverImageUrl();
+        EyeBodyResponse.ImageDto imageDto = null;
         String base64;
 
         FileInputStream fis = null;
@@ -119,13 +120,17 @@ public class EyeBodyServiceImpl implements EyebodyService{
             }
             fileArray = baos.toByteArray();
             base64 = Base64.getEncoder().encodeToString(fileArray);
-
+            imageDto = new EyeBodyResponse.ImageDto(
+                    base64,
+                    eyebody.getCreatedAt().toLocalDate()
+            );
             fis.close();
             baos.close();
+
         } catch(IOException e){
             throw new RuntimeException("File Error");
         }
-        return base64;
+        return imageDto;
     }
     public List<EyeBodyResponse.EyeBodyDto> getImgList(MemberDetails memberDetails) throws IOException{
         List<EyeBodyResponse.EyeBodyDto> base64Images = new ArrayList<>();
