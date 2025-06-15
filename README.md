@@ -12,8 +12,7 @@
 | ----- | ------------------------------------------------------------------------ |
 | 개발 기간 | 2024.09 \~ 2024.12                                                       |
 | 팀 구성  | 총 4명 (백엔드 2명, 프론트엔드 2명)                                                  |
-| 담당 역할 | 백엔드 전반 설계 및 구현<br>· 체중 기록<br>· 대결 시스템<br>· 게시판(운동 메이트) 기능                |
-| 기술 스택 | Java 21, Spring Boot, MySQL, Spring Security, JWT, Kakao OAuth2, S3, AES |
+| 기술 스택 | Java 21, Spring Boot, MySQL, Spring Security, JWT, AES |
 
 ---
 
@@ -47,15 +46,15 @@
 
 ## ⚙️ 기술 스택
 
-| 분류         | 내용                                 |
-| ---------- | ---------------------------------- |
-| Language   | Java (JDK 21)                      |
-| Framework  | Spring Boot                        |
-| DB / Infra | MySQL, AWS S3                      |
-| 인증         | Spring Security, JWT, Kakao OAuth2 |
-| 보안         | AES 이미지 암호화                        |
-| 협업 & 설계    | GitHub, Figma, Notion, ERDCloud    |
-| 테스트        | Postman                            |
+| 분류         | 내용                                        |
+|--------------|---------------------------------------------|
+| Language     | Java (JDK 21)                               |
+| Framework    | Spring Boot                                 |
+| DB / Infra   | MySQL                                        |
+| 인증         | Spring Security, JWT                        |
+| 보안         | AES 기반 이미지 암호화                      |
+| 협업 & 설계  | GitHub, Figma, Notion, ERDCloud, Swagger    |
+| 테스트       | Postman                                     |
 
 ---
 
@@ -66,29 +65,8 @@
 
 ---
 
-## 🚀 향후 계획
-
-* Swagger 기반 API 문서 자동화
-* CI/CD 파이프라인 도입 (Github Actions + AWS)
-* 관리자 기능 추가 및 통계 대시보드 구현
-
----
-
-## 🙋‍♀️ 기여자
-
-| 이름             | 역할                                |
-| -------------- | --------------------------------- |
-| 김세희 (@saeeyes) | 백엔드 개발: 체중 기록, 대결, 게시글 기능 설계 및 구현 |
-| 팀원 A           | 백엔드 인증, 사용자 관리 로직                 |
-| 팀원 B           | 프론트엔드 (React Native)              |
-| 팀원 C           | 프론트엔드 및 UI/UX 디자인                 |
-
----
-
 🔗 **[PM 백엔드 GitHub Repo 바로가기](https://github.com/saeeyes/PersonalManager-BE)**
 
 > “지속 가능한 다이어트 루틴을 위해, 기술로 건강을 설계합니다.” 💪
 
 ---
-
-원한다면 이 내용을 그대로 `README.md`에 붙여도 되고, 더 꾸미거나 요약하는 형태도 도와줄게!
